@@ -1,0 +1,18 @@
+{
+  "login": {
+    "title": "登入",
+    "email": "電子郵件",
+    "password": "密碼",
+    "submit": "登入",
+    "error": "帳號或密碼錯誤"
+  },
+  "dashboard": {
+    "welcome": "歡迎",
+    "clientComponent": "這是客戶端元件",
+    "serverComponent": "這是伺服器端元件"
+  },
+  "language": {
+    "en": "英文",
+    "zh": "繁體中文"
+  }
+} 

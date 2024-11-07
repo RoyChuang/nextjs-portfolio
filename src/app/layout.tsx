@@ -1,7 +1,8 @@
-import { I18nProvider } from "@/components/i18n/I18nProvider";
+import { I18nProvider } from '@/providers/I18nProvider';
+import { Inter } from 'next/font/google';
+import './globals.css';
 
-import { Providers } from "./providers";
-import "./globals.css";
+const inter = Inter({ subsets: ['latin'] });
 
 export default function RootLayout({
   children,
@@ -10,10 +11,8 @@ export default function RootLayout({
 }) {
   return (
     <html lang="en">
-      <body>
-        <Providers>
-          <I18nProvider>{children}</I18nProvider>
-        </Providers>
+      <body className={inter.className}>
+        <I18nProvider>{children}</I18nProvider>
       </body>
     </html>
   );
