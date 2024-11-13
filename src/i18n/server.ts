@@ -21,14 +21,6 @@ const initI18next = async (lang: string) => {
   return i18nInstance
 }
 
-// 保留原有的 getTranslation
-export async function getTranslation(lang: string = 'zh') {
-  const i18next = await initI18next(lang)
-  return {
-    t: i18next.getFixedT(lang)
-  }
-}
-
 // 新增 getServerTranslations，使用 cache 優化效能
 export const getServerTranslations = cache(async () => {
   const cookieStore = await cookies()
