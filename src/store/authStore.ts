@@ -1,5 +1,5 @@
 import { create } from 'zustand';
-import { persist } from 'zustand/middleware';
+import Cookies from 'js-cookie';
 
 interface AuthState {
   isAuthenticated: boolean;
@@ -8,33 +8,27 @@ interface AuthState {
   logout: () => void;
 }
 
-export const useAuthStore = create<AuthState>()(
-  persist(
-    (set) => ({
-      isAuthenticated: false,
-      user: null,
-      login: async (email: string, password: string) => {
-        try {
-          if (email === 'test@test.com' && password === '123') {
-            set({ isAuthenticated: true, user: { email } });
-            return true;
-          }
-          return false;
-        } catch (error) {
-          console.error('Login error:', error);
-          return false;
-        }
-      },
-      logout: () => {
-        set({ isAuthenticated: false, user: null });
-      },
-    }),
-    {
-      name: 'auth-storage', // localStorage 中的键名
-      partialize: (state) => ({ 
-        isAuthenticated: state.isAuthenticated,
-        user: state.user,
-      }), // 只持久化这些字段
+export const useAuthStore = create<AuthState>((set) => ({
+  isAuthenticated: false,
+  user: null,
+  login: async (email: string, password: string) => {
+    try {
+      if (email === 'test@test.com' && password === '123') {
+        const authData = { isAuthenticated: true, user: { email } };
+        set(authData);
+        Cookies.set('auth', JSON.stringify(authData), { expires: 7 });
+        window.location.href = '/dashboard';
+        return true;
+      }
+      return false;
+    } catch (error) {
+      console.error('Login error:', error);
+      return false;
     }
-  )
-); 
+  },
+  logout: () => {
+    set({ isAuthenticated: false, user: null });
+    Cookies.remove('auth');
+    window.location.href = '/login';
+  },
+}));

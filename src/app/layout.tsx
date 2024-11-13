@@ -1,4 +1,3 @@
-import { AuthGuard } from '@/components/AuthGuard';
 import { I18nProvider } from '@/providers/I18nProvider';
 import { Inter } from 'next/font/google';
 import './globals.css';
@@ -14,7 +13,7 @@ export default function RootLayout({
     <html lang="en">
       <body className={inter.className}>
         <I18nProvider>
-          <AuthGuard>{children}</AuthGuard>
+          {children}
         </I18nProvider>
       </body>
     </html>
