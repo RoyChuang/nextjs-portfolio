@@ -14,5 +14,8 @@
   "language": {
     "en": "English",
     "zh": "Traditional Chinese"
+  },
+  "common": {
+    "logout": "Logout"
   }
 } 

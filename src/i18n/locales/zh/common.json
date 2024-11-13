@@ -14,5 +14,8 @@
   "language": {
     "en": "英文",
     "zh": "繁體中文"
+  },
+  "common": {
+    "logout": "登出"
   }
 } 

@@ -18,7 +18,6 @@ export function LanguageSwitcher() {
 
   const handleLanguageChange = (value: string) => {
     setLanguage(value);
-    // 觸發伺服器元件重新渲染
     router.refresh();
   };
 

@@ -3,23 +3,24 @@
 import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useAuthStore } from '@/store/authStore';
-import { useRouter } from 'next/navigation';
 import { LanguageSwitcher } from '@/components/LanguageSwitcher';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
 
 export default function LoginPage() {
   const { t } = useTranslation();
-  const router = useRouter();
   const login = useAuthStore((state) => state.login);
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
+  const [error, setError] = useState('');
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    setError('');
+    
     const success = await login(email, password);
-    if (success) {
-      router.push('/dashboard');
+    if (!success) {
+      setError(t('login.error'));
     }
   };
 
@@ -44,6 +45,9 @@ export default function LoginPage() {
               value={password}
               onChange={(e) => setPassword(e.target.value)}
             />
+            {error && (
+              <div className="text-red-500 text-sm">{error}</div>
+            )}
           </div>
           <Button type="submit" className="w-full">
             {t('login.submit')}
