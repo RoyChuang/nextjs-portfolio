@@ -1,8 +1,7 @@
 import { create } from 'zustand';
 import Cookies from 'js-cookie';
 import { pb } from '@/lib/pocketbase';
-import { User } from '@/types/user'; // 添加这行导入语句
-
+import { User } from '@/types/user';
 
 interface AuthState {
   isAuthenticated: boolean;
@@ -12,8 +11,8 @@ interface AuthState {
 }
 
 export const useAuthStore = create<AuthState>((set) => ({
-  isAuthenticated: false,
-  user: null,
+  isAuthenticated: pb.authStore.isValid,
+  user: pb.authStore.model as User | null,
   setAuth: (userData) => {
     set({
       isAuthenticated: true,
@@ -22,7 +21,7 @@ export const useAuthStore = create<AuthState>((set) => ({
   },
   logout: () => {
     pb.authStore.clear();
-    set({ isAuthenticated: false, user: null });
     Cookies.remove('auth-token');
+    set({ isAuthenticated: false, user: null });
   },
-}));
+})); 

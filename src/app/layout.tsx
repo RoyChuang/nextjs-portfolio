@@ -1,9 +1,14 @@
 import { I18nProvider } from '@/providers/I18nProvider';
 import { QueryProvider } from '@/providers/QueryProvider';
-import { Inter } from 'next/font/google';
+import { Roboto } from 'next/font/google';
 import './globals.css';
 
-const inter = Inter({ subsets: ['latin'] });
+import { AppLayout } from '@/components/AppLayout';
+
+const roboto = Roboto({
+  weight: ['400', '700'],
+  subsets: ['latin'],
+});
 
 export default function RootLayout({
   children,
@@ -12,10 +17,12 @@ export default function RootLayout({
 }) {
   return (
     <html lang="en">
-      <body className={inter.className}>
+      <body className={roboto.className}>
         <QueryProvider>
           <I18nProvider>
-            {children}
+            <AppLayout>
+              {children}
+            </AppLayout>
           </I18nProvider>
         </QueryProvider>
       </body>
