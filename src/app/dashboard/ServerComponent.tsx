@@ -10,7 +10,7 @@ export async function ServerComponent() {
         <CardTitle>{t('dashboard.serverComponent')}</CardTitle>
       </CardHeader>
       <CardContent>
-        <p>{t('dashboard.serverContent')}</p>
+        <p>Server-side rendered content</p>
       </CardContent>
     </Card>
   );

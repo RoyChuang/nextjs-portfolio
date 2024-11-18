@@ -2,26 +2,20 @@
 
 import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { useAuthStore } from '@/store/authStore';
+import { useAuth } from '@/hooks/useAuth';
 import { LanguageSwitcher } from '@/components/LanguageSwitcher';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
 
 export default function LoginPage() {
   const { t } = useTranslation();
-  const login = useAuthStore((state) => state.login);
+  const { login, isLoading, error } = useAuth();
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
-  const [error, setError] = useState('');
 
-  const handleSubmit = async (e: React.FormEvent) => {
+  const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    setError('');
-    
-    const success = await login(email, password);
-    if (!success) {
-      setError(t('login.error'));
-    }
+    login({ email, password });
   };
 
   return (
@@ -38,19 +32,25 @@ export default function LoginPage() {
               placeholder={t('login.email')}
               value={email}
               onChange={(e) => setEmail(e.target.value)}
+              disabled={isLoading}
             />
             <Input
               type="password"
               placeholder={t('login.password')}
               value={password}
               onChange={(e) => setPassword(e.target.value)}
+              disabled={isLoading}
             />
             {error && (
-              <div className="text-red-500 text-sm">{error}</div>
+              <div className="text-red-500 text-sm">{t('login.error')}</div>
             )}
           </div>
-          <Button type="submit" className="w-full">
-            {t('login.submit')}
+          <Button 
+            type="submit" 
+            className="w-full"
+            disabled={isLoading}
+          >
+            {isLoading ? t('common.loading') : t('login.submit')}
           </Button>
         </form>
       </div>

@@ -16,6 +16,7 @@
     "zh": "Traditional Chinese"
   },
   "common": {
-    "logout": "Logout"
+    "logout": "Logout",
+    "loading": "Loading..."
   }
 } 

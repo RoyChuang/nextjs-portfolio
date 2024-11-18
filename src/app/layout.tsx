@@ -1,4 +1,5 @@
 import { I18nProvider } from '@/providers/I18nProvider';
+import { QueryProvider } from '@/providers/QueryProvider';
 import { Inter } from 'next/font/google';
 import './globals.css';
 
@@ -12,9 +13,11 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body className={inter.className}>
-        <I18nProvider>
-          {children}
-        </I18nProvider>
+        <QueryProvider>
+          <I18nProvider>
+            {children}
+          </I18nProvider>
+        </QueryProvider>
       </body>
     </html>
   );
