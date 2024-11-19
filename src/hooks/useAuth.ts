@@ -13,19 +13,16 @@ export function useAuth() {
   const loginMutation = useMutation({
     mutationFn: authApi.login,
     onSuccess: (data) => {
-      // 設置 cookie
       Cookies.set('auth-token', data.token);
-      // 更新 zustand store
       setAuth({
         username: data.record.username,
         email: data.record.email,
         avatar: data.record.avatar,
         ...data.record
       });
-      router.replace('/dashboard');
+      router.push('/dashboard');
     },
     onError: () => {
-      // 確保清除所有認證狀態
       pb.authStore.clear();
       Cookies.remove('auth-token');
     }
@@ -33,9 +30,8 @@ export function useAuth() {
 
   const handleLogout = () => {
     logout();
-    router.replace('/login');
+    router.push('/login');
   };
-
 
   return {
     login: loginMutation.mutate,

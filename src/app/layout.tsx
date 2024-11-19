@@ -3,8 +3,6 @@ import { QueryProvider } from '@/providers/QueryProvider';
 import { Roboto } from 'next/font/google';
 import './globals.css';
 
-import { AppLayout } from '@/components/AppLayout';
-
 const roboto = Roboto({
   weight: ['400', '700'],
   subsets: ['latin'],
@@ -20,9 +18,7 @@ export default function RootLayout({
       <body className={roboto.className}>
         <QueryProvider>
           <I18nProvider>
-            <AppLayout>
-              {children}
-            </AppLayout>
+            {children}
           </I18nProvider>
         </QueryProvider>
       </body>

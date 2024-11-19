@@ -1,16 +1,32 @@
 "use client"
 
+import { useEffect } from 'react';
 import { useAuthStore } from '@/store/authStore';
 import { SidebarProvider } from '@/components/ui/sidebar';
 import { AppSidebar } from '@/components/app-sidebar';
 import { SidebarTrigger } from '@/components/ui/sidebar';
 import { LanguageSwitcher } from '@/components/LanguageSwitcher';
 import { LogoutButton } from '@/components/LogoutButton';
+import { redirect } from 'next/navigation'
 
-export function AppLayout({ children }: { children: React.ReactNode }) {
+export default function AuthLayout({
+  children,
+}: {
+  children: React.ReactNode;
+}) {
   const isAuthenticated = useAuthStore((state) => state.isAuthenticated);
 
-  return isAuthenticated ? (
+  useEffect(() => {
+    if (!isAuthenticated) {
+      redirect('/login')
+    }
+  }, [isAuthenticated]);
+
+  if (!isAuthenticated) {
+    return null;
+  }
+
+  return (
     <SidebarProvider>
       <div className="flex min-h-screen w-full">
         <AppSidebar />
@@ -28,9 +44,5 @@ export function AppLayout({ children }: { children: React.ReactNode }) {
         </main>
       </div>
     </SidebarProvider>
-  ) : (
-    <div className="min-h-screen">
-      {children}
-    </div>
   );
-}
+} 
