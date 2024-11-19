@@ -1,5 +1,6 @@
-import { create } from 'zustand';
 import Cookies from 'js-cookie';
+import { create } from 'zustand';
+
 import { pb } from '@/lib/pocketbase';
 import { User } from '@/types/user';
 
@@ -16,7 +17,7 @@ export const useAuthStore = create<AuthState>((set) => ({
   setAuth: (userData) => {
     set({
       isAuthenticated: true,
-      user: userData
+      user: userData,
     });
   },
   logout: () => {
@@ -24,4 +25,4 @@ export const useAuthStore = create<AuthState>((set) => ({
     Cookies.remove('auth-token');
     set({ isAuthenticated: false, user: null });
   },
-})); 
+}));

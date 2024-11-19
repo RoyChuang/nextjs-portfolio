@@ -1,7 +1,8 @@
 'use client';
 
-import { useTranslation } from 'react-i18next';
 import { useRouter } from 'next/navigation';
+import { useTranslation } from 'react-i18next';
+
 import {
   Select,
   SelectContent,
@@ -22,10 +23,7 @@ export function LanguageSwitcher() {
   };
 
   return (
-    <Select
-      value={currentLanguage}
-      onValueChange={handleLanguageChange}
-    >
+    <Select value={currentLanguage} onValueChange={handleLanguageChange}>
       <SelectTrigger className="w-[180px]">
         <SelectValue placeholder="Select Language" />
       </SelectTrigger>
@@ -35,4 +33,4 @@ export function LanguageSwitcher() {
       </SelectContent>
     </Select>
   );
-} 
+}

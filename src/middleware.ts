@@ -1,5 +1,5 @@
-import { NextResponse } from 'next/server';
 import type { NextRequest } from 'next/server';
+import { NextResponse } from 'next/server';
 
 const publicPaths = ['/login'];
 
@@ -18,7 +18,7 @@ export function middleware(request: NextRequest) {
   }
 
   const response = NextResponse.next();
-  
+
   response.headers.set('Cache-Control', 'no-cache, no-store, must-revalidate');
   response.headers.set('Pragma', 'no-cache');
   response.headers.set('Expires', '0');
@@ -27,7 +27,5 @@ export function middleware(request: NextRequest) {
 }
 
 export const config = {
-  matcher: [
-    '/((?!api|_next/static|_next/image|favicon.ico).*)',
-  ],
-}; 
+  matcher: ['/((?!api|_next/static|_next/image|favicon.ico).*)'],
+};

@@ -1,7 +1,7 @@
-import { create } from 'zustand';
-import i18n from '@/i18n/config';
 import Cookies from 'js-cookie';
-import { LANG_COOKIE_NAME } from '@/i18n/config';
+import { create } from 'zustand';
+
+import i18n, { LANG_COOKIE_NAME } from '@/i18n/config';
 
 interface LanguageState {
   currentLanguage: string;

@@ -1,4 +1,4 @@
-import { Card, CardHeader, CardTitle, CardContent } from '@/components/ui/card';
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { getServerTranslations } from '@/i18n/server';
 
 export async function ServerComponent() {
@@ -14,4 +14,4 @@ export async function ServerComponent() {
       </CardContent>
     </Card>
   );
-} 
+}

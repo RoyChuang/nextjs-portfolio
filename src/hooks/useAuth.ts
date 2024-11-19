@@ -1,8 +1,9 @@
 import { useMutation } from '@tanstack/react-query';
 import Cookies from 'js-cookie';
 import { useRouter } from 'next/navigation';
-import { pb } from '@/lib/pocketbase';
+
 import { authApi } from '@/api/auth';
+import { pb } from '@/lib/pocketbase';
 import { useAuthStore } from '@/store/authStore';
 
 export function useAuth() {
@@ -18,14 +19,14 @@ export function useAuth() {
         username: data.record.username,
         email: data.record.email,
         avatar: data.record.avatar,
-        ...data.record
+        ...data.record,
       });
       router.push('/dashboard');
     },
     onError: () => {
       pb.authStore.clear();
       Cookies.remove('auth-token');
-    }
+    },
   });
 
   const handleLogout = () => {

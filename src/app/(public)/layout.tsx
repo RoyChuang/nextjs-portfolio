@@ -1,14 +1,11 @@
-"use client"
+'use client';
 
-import { useEffect } from 'react';
 import { useRouter } from 'next/navigation';
+import { useEffect } from 'react';
+
 import { useAuthStore } from '@/store/authStore';
 
-export default function PublicLayout({
-  children,
-}: {
-  children: React.ReactNode;
-}) {
+export default function PublicLayout({ children }: { children: React.ReactNode }) {
   const isAuthenticated = useAuthStore((state) => state.isAuthenticated);
   const router = useRouter();
 
@@ -18,9 +15,5 @@ export default function PublicLayout({
     }
   }, [isAuthenticated, router]);
 
-  return (
-    <div className="min-h-screen">
-      {children}
-    </div>
-  );
-} 
+  return <div className="min-h-screen">{children}</div>;
+}

@@ -2,10 +2,11 @@
 
 import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { useAuth } from '@/hooks/useAuth';
+
 import { LanguageSwitcher } from '@/components/LanguageSwitcher';
-import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
+import { Input } from '@/components/ui/input';
+import { useAuth } from '@/hooks/useAuth';
 
 export default function LoginPage() {
   const { t } = useTranslation();
@@ -19,12 +20,10 @@ export default function LoginPage() {
   };
 
   return (
-    <div className="min-h-screen flex flex-col items-center justify-center p-4">
+    <div className="flex min-h-screen flex-col items-center justify-center p-4">
       <div className="w-full max-w-md space-y-8">
         <LanguageSwitcher />
-        <h2 className="mt-6 text-center text-3xl font-bold">
-          {t('login.title')}
-        </h2>
+        <h2 className="mt-6 text-center text-3xl font-bold">{t('login.title')}</h2>
         <form className="mt-8 space-y-6" onSubmit={handleSubmit}>
           <div className="space-y-4">
             <Input
@@ -41,19 +40,13 @@ export default function LoginPage() {
               onChange={(e) => setPassword(e.target.value)}
               disabled={isLoading}
             />
-            {error && (
-              <div className="text-red-500 text-sm">{t('login.error')}</div>
-            )}
+            {error && <div className="text-sm text-red-500">{t('login.error')}</div>}
           </div>
-          <Button 
-            type="submit" 
-            className="w-full"
-            disabled={isLoading}
-          >
+          <Button type="submit" className="w-full" disabled={isLoading}>
             {isLoading ? t('common.loading') : t('login.submit')}
           </Button>
         </form>
       </div>
     </div>
   );
-} 
+}
