@@ -4,7 +4,10 @@
     "email": "電子郵件",
     "password": "密碼",
     "submit": "登入",
-    "error": "帳號或密碼錯誤"
+    "error": "帳號或密碼錯誤",
+    "emailRequired": "請輸入電子郵件",
+    "emailInvalid": "請輸入有效的電子郵件",
+    "passwordRequired": "請輸入密碼"
   },
   "dashboard": {
     "welcome": "歡迎",

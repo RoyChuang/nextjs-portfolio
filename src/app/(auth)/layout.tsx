@@ -3,7 +3,7 @@
 import { redirect } from 'next/navigation';
 import { useEffect } from 'react';
 
-import { AppSidebar } from '@/components/app-sidebar';
+import { AppSidebar } from '@/components/AppSidebar';
 import { LanguageSwitcher } from '@/components/LanguageSwitcher';
 import { LogoutButton } from '@/components/LogoutButton';
 import { SidebarProvider, SidebarTrigger } from '@/components/ui/sidebar';
@@ -27,7 +27,7 @@ export default function AuthLayout({ children }: { children: React.ReactNode }) 
       <div className="flex min-h-screen w-full">
         <AppSidebar />
         <main className="w-full flex-1">
-          <div className="sticky top-0 z-50 flex items-center justify-between bg-background p-4">
+          <div className="sticky top-0 z-50 flex items-center justify-between border-b bg-background/80 p-4 backdrop-blur-sm">
             <SidebarTrigger />
             <div className="flex items-center gap-2">
               <LanguageSwitcher />

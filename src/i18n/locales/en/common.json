@@ -4,7 +4,10 @@
     "email": "Email",
     "password": "Password",
     "submit": "Sign In",
-    "error": "Invalid credentials"
+    "error": "Invalid credentials",
+    "emailRequired": "Email is required",
+    "emailInvalid": "Please enter a valid email",
+    "passwordRequired": "Password is required"
   },
   "dashboard": {
     "welcome": "Welcome",
