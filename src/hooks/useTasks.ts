@@ -20,10 +20,12 @@ export function useTasks(params: GetTasksParams) {
     },
   });
 
-  const { mutate: updateTaskMutation } = useMutation({
-    mutationFn: updateTask,
+  const { mutateAsync: updateTaskMutation } = useMutation({
+    mutationFn: (params: { id: string; data: Partial<TaskFormValues> }) => {
+      return updateTask(params.id, params.data);
+    },
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['tasks', params] });
+      queryClient.invalidateQueries({ queryKey: ['tasks'] });
     },
   });
 
@@ -43,7 +45,9 @@ export function useTasks(params: GetTasksParams) {
     totalPages: data?.totalPages || 0,
     isLoading,
     createTask: createTaskMutation,
-    updateTask: updateTaskMutation,
+    updateTask: async (id: string, data: Partial<TaskFormValues>) => {
+      return await updateTaskMutation({ id, data });
+    },
     deleteTask: deleteTaskMutation,
   };
 }

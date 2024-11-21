@@ -1,7 +1,7 @@
 'use client';
 
 import { format } from 'date-fns';
-import { Loader2, Plus, Trash2 } from 'lucide-react';
+import { Loader2, Pencil, Plus, Trash2 } from 'lucide-react';
 import { useState } from 'react';
 
 import { Badge } from '@/components/ui/badge';
@@ -49,20 +49,15 @@ export default function TaskList() {
     open: false,
     taskId: null,
   });
+  const [editTask, setEditTask] = useState<{ open: boolean; task: Task | null }>({
+    open: false,
+    task: null,
+  });
 
-  const { tasks, total, totalPages, isLoading, updateTask, deleteTask, createTask } = useTasks({
+  const { tasks, total, totalPages, isLoading, deleteTask, createTask, updateTask } = useTasks({
     page: currentPage,
     pageSize: pageSize,
   });
-
-  const handleStatusChange = (taskId: string, currentStatus: TaskStatus) => {
-    let newStatus: TaskStatus = 0;
-    if (currentStatus === 0) newStatus = 1;
-    else if (currentStatus === 1) newStatus = 2;
-    else if (currentStatus === 2) newStatus = 0;
-
-    updateTask(taskId, { status: newStatus });
-  };
 
   const handlePageSizeChange = (value: string) => {
     const newPageSize = Number(value);
@@ -104,6 +99,33 @@ export default function TaskList() {
       });
     } finally {
       setDeleteConfirm({ open: false, taskId: null });
+    }
+  };
+
+  const handleEditTask = async (data: TaskFormValues) => {
+    if (!editTask.task) return;
+    try {
+      const payload = {
+        name: data.name,
+        status: data.status,
+        progress: data.progress,
+        dueDate: data.dueDate ? data.dueDate.toISOString() : null,
+      };
+
+      console.log('更新任務數據:', payload); // 調試用
+
+      await updateTask(editTask.task.id, payload);
+
+      setEditTask({ open: false, task: null });
+      toast({
+        description: '任務已更新',
+      });
+    } catch (error) {
+      console.error('更新任務失敗:', error);
+      toast({
+        variant: 'destructive',
+        description: '更新任務失敗',
+      });
     }
   };
 
@@ -166,11 +188,7 @@ export default function TaskList() {
                   <span>{task.name}</span>
                 </TableCell>
                 <TableCell>
-                  <Badge
-                    variant={statusConfig.variant}
-                    className="cursor-pointer"
-                    onClick={() => handleStatusChange(task.id, task.status)}
-                  >
+                  <Badge variant={statusConfig.variant} className="cursor-pointer">
                     {statusConfig.label}
                   </Badge>
                 </TableCell>
@@ -185,6 +203,15 @@ export default function TaskList() {
                 </TableCell>
                 <TableCell>{format(new Date(task.created), 'yyyy-MM-dd')}</TableCell>
                 <TableCell className="text-right">
+                  <Button
+                    variant="ghost"
+                    size="icon"
+                    onClick={() => setEditTask({ open: true, task: task })}
+                    className="size-8 text-primary hover:text-primary/90"
+                  >
+                    <Pencil className="size-4" />
+                    <span className="sr-only">编辑任务</span>
+                  </Button>
                   <Button
                     variant="ghost"
                     size="icon"
@@ -239,6 +266,13 @@ export default function TaskList() {
         onConfirm={handleDeleteConfirm}
         title="確認刪除"
         description="確認要刪除這個任務嗎？"
+      />
+
+      <TaskDialog
+        open={editTask.open}
+        onOpenChange={(open) => setEditTask({ ...editTask, open })}
+        onSubmit={handleEditTask}
+        defaultValues={editTask.task || undefined}
       />
     </div>
   );

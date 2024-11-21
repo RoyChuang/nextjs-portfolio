@@ -3,6 +3,7 @@
 import { zodResolver } from '@hookform/resolvers/zod';
 import { format } from 'date-fns';
 import { Calendar as CalendarIcon } from 'lucide-react';
+import { useEffect } from 'react';
 import { useForm } from 'react-hook-form';
 import * as z from 'zod';
 
@@ -48,10 +49,13 @@ type TaskFormValues = z.infer<typeof taskFormSchema>;
 interface TaskDialogProps {
   open: boolean;
   onOpenChange: (open: boolean) => void;
-  onSubmit: (data: TaskFormValues) => Promise<void>;
+  onSubmit: (data: TaskFormValues) => void;
+  defaultValues?: Task;
 }
 
-export function TaskDialog({ open, onOpenChange, onSubmit }: TaskDialogProps) {
+export function TaskDialog({ open, onOpenChange, onSubmit, defaultValues }: TaskDialogProps) {
+  const isEditing = !!defaultValues;
+
   const form = useForm<TaskFormValues>({
     resolver: zodResolver(taskFormSchema),
     defaultValues: {
@@ -60,6 +64,23 @@ export function TaskDialog({ open, onOpenChange, onSubmit }: TaskDialogProps) {
       progress: 0,
     },
   });
+
+  useEffect(() => {
+    if (defaultValues) {
+      form.reset({
+        name: defaultValues.name,
+        status: defaultValues.status,
+        progress: defaultValues.progress || 0,
+        dueDate: defaultValues.dueDate ? new Date(defaultValues.dueDate) : undefined,
+      });
+    } else {
+      form.reset({
+        name: '',
+        status: 0,
+        progress: 0,
+      });
+    }
+  }, [form, defaultValues, open]);
 
   const handleSubmit = async (data: TaskFormValues) => {
     try {
@@ -74,8 +95,10 @@ export function TaskDialog({ open, onOpenChange, onSubmit }: TaskDialogProps) {
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent className="sm:max-w-[425px]">
         <DialogHeader>
-          <DialogTitle>新增任務</DialogTitle>
-          <DialogDescription>在此填寫新任務的詳細信息</DialogDescription>
+          <DialogTitle>{isEditing ? '編輯任務' : '新增任務'}</DialogTitle>
+          <DialogDescription>
+            {isEditing ? '修改任務的詳細信息' : '在此填寫新任務的詳細信息'}
+          </DialogDescription>
         </DialogHeader>
         <Form {...form}>
           <form onSubmit={form.handleSubmit(handleSubmit)} className="space-y-4">

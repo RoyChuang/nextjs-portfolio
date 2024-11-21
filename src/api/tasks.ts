@@ -33,8 +33,14 @@ export const createTask = async (data: TaskFormValues): Promise<Task> => {
   return response;
 };
 
-export const updateTask = async (id: string, data: { completed: boolean }) => {
-  return await pb.collection('tasks').update(id, data);
+export const updateTask = async (id: string, data: Partial<TaskFormValues>) => {
+  console.log('🚀 ~ updateTask ~ data:', id, data);
+  const payload = {
+    ...data,
+    dueDate: data.dueDate ? data.dueDate : null,
+  };
+
+  return await pb.collection('tasks').update(id, payload);
 };
 
 export const deleteTask = async (id: string) => {
