@@ -14,7 +14,7 @@ const roboto = Roboto({
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
     <html lang="zh-TW">
-      <body>
+      <body className={roboto.className}>
         <QueryProvider>
           <I18nProvider>{children}</I18nProvider>
         </QueryProvider>
