@@ -36,6 +36,7 @@ import {
 // 假設你有一個 Slider 組件
 import { Slider } from '@/components/ui/slider';
 import { cn } from '@/lib/utils';
+import { Task } from '@/types/task';
 
 const taskFormSchema = z.object({
   name: z.string().min(1, '請輸入任務名稱'),
