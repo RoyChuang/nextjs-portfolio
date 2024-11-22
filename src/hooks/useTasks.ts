@@ -27,6 +27,9 @@ export function useTasks(params: GetTasksParams) {
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['tasks'] });
     },
+    onError: (error) => {
+      throw error;
+    },
   });
 
   const { mutateAsync: deleteTaskMutation } = useMutation({
@@ -35,7 +38,7 @@ export function useTasks(params: GetTasksParams) {
       queryClient.invalidateQueries({ queryKey: ['tasks', params] });
     },
     onError: (error) => {
-      throw error; // 確保錯誤被傳播到組件
+      throw error;
     },
   });
 
