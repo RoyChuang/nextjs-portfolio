@@ -1,8 +1,8 @@
 'use client';
 
 import { format } from 'date-fns';
-import { Loader2, Pencil, Plus, Search, Trash2 } from 'lucide-react';
-import { useEffect, useState } from 'react';
+import { Pencil, Plus, Search, Trash2 } from 'lucide-react';
+import { useState } from 'react';
 
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
@@ -16,6 +16,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@/components/ui/select';
+import { Skeleton } from '@/components/ui/skeleton';
 import {
   Table,
   TableBody,
@@ -26,7 +27,7 @@ import {
 } from '@/components/ui/table';
 import { useToast } from '@/hooks/use-toast';
 import { useTasks } from '@/hooks/useTasks';
-import { TaskFormValues, TaskStatus } from '@/types/task';
+import { Task, TaskFormValues, TaskStatus } from '@/types/task';
 
 import { TaskDialog } from './TaskDialog';
 
@@ -141,7 +142,15 @@ export default function TaskList() {
 
   // 處理搜索按鈕點擊
   const handleSearch = () => {
+    setCurrentPage(1); // 重置到第一頁
     setSearch(searchInput);
+  };
+
+  // 處理清除搜索
+  const handleClearSearch = () => {
+    setCurrentPage(1); // 重置到第一頁
+    setSearch('');
+    setSearchInput('');
   };
 
   // 處理按下 Enter 鍵
@@ -150,13 +159,6 @@ export default function TaskList() {
       handleSearch();
     }
   };
-
-  if (isLoading)
-    return (
-      <div className="flex min-h-[200px]">
-        <Loader2 className="size-8 animate-spin text-primary" />
-      </div>
-    );
 
   return (
     <div className="w-full space-y-4">
@@ -186,14 +188,7 @@ export default function TaskList() {
               </Button>
             </div>
             {search && (
-              <Button
-                variant="ghost"
-                size="sm"
-                onClick={() => {
-                  setSearch('');
-                  setSearchInput('');
-                }}
-              >
+              <Button variant="ghost" size="sm" onClick={handleClearSearch}>
                 清除
               </Button>
             )}
@@ -223,106 +218,115 @@ export default function TaskList() {
         onSubmit={handleCreateTask}
       />
 
-      <Table>
-        <TableHeader>
-          <TableRow>
-            <TableHead onClick={() => handleSort('name')} className="cursor-pointer">
-              任務名稱 {sort.includes('name') && (sort.startsWith('-') ? '↓' : '↑')}
-            </TableHead>
-            <TableHead onClick={() => handleSort('status')} className="cursor-pointer">
-              狀態 {sort.includes('status') && (sort.startsWith('-') ? '↓' : '↑')}
-            </TableHead>
-            <TableHead onClick={() => handleSort('progress')} className="cursor-pointer">
-              進度 {sort.includes('progress') && (sort.startsWith('-') ? '↓' : '↑')}
-            </TableHead>
-            <TableHead onClick={() => handleSort('dueDate')} className="cursor-pointer">
-              截止日期 {sort.includes('dueDate') && (sort.startsWith('-') ? '↓' : '↑')}
-            </TableHead>
-            <TableHead onClick={() => handleSort('created')} className="cursor-pointer">
-              創建時間 {sort.includes('created') && (sort.startsWith('-') ? '↓' : '↑')}
-            </TableHead>
-            <TableHead className="text-right">操作</TableHead>
-          </TableRow>
-        </TableHeader>
-        <TableBody>
-          {tasks.map((task) => {
-            const statusConfig = getStatusConfig(task.status);
+      <div className="relative">
+        <Table>
+          <TableHeader>
+            <TableRow>
+              <TableHead onClick={() => handleSort('name')} className="cursor-pointer">
+                任務名稱 {sort.includes('name') && (sort.startsWith('-') ? '↓' : '↑')}
+              </TableHead>
+              <TableHead onClick={() => handleSort('status')} className="cursor-pointer">
+                狀態 {sort.includes('status') && (sort.startsWith('-') ? '↓' : '↑')}
+              </TableHead>
+              <TableHead onClick={() => handleSort('progress')} className="cursor-pointer">
+                進度 {sort.includes('progress') && (sort.startsWith('-') ? '↓' : '↑')}
+              </TableHead>
+              <TableHead onClick={() => handleSort('dueDate')} className="cursor-pointer">
+                截止日期 {sort.includes('dueDate') && (sort.startsWith('-') ? '↓' : '↑')}
+              </TableHead>
+              <TableHead onClick={() => handleSort('created')} className="cursor-pointer">
+                創建時間 {sort.includes('created') && (sort.startsWith('-') ? '↓' : '↑')}
+              </TableHead>
+              <TableHead className="text-right">操作</TableHead>
+            </TableRow>
+          </TableHeader>
+          <TableBody>
+            {isLoading
+              ? // 顯示多個骨架行
+                Array.from({ length: pageSize }).map((_, index) => <TaskRowSkeleton key={index} />)
+              : tasks.map((task) => {
+                  const statusConfig = getStatusConfig(task.status);
 
-            return (
-              <TableRow key={task.id}>
-                <TableCell className="font-medium">
-                  <span>{task.name}</span>
-                </TableCell>
-                <TableCell>
-                  <Badge variant={statusConfig.variant} className="cursor-pointer">
-                    {statusConfig.label}
-                  </Badge>
-                </TableCell>
-                <TableCell>
-                  <div className="flex items-center gap-2">
-                    <Progress value={task.progress || 0} className="w-[60px]" />
-                    <span className="text-sm text-muted-foreground">{task.progress || 0}%</span>
-                  </div>
-                </TableCell>
-                <TableCell>
-                  {task.dueDate ? format(new Date(task.dueDate), 'yyyy-MM-dd') : '-'}
-                </TableCell>
-                <TableCell>{format(new Date(task.created), 'yyyy-MM-dd')}</TableCell>
-                <TableCell className="text-right">
-                  <Button
-                    variant="ghost"
-                    size="icon"
-                    onClick={() => setEditTask({ open: true, task: task })}
-                    className="size-8 text-primary hover:text-primary/90"
-                  >
-                    <Pencil className="size-4" />
-                    <span className="sr-only">编辑任务</span>
-                  </Button>
-                  <Button
-                    variant="ghost"
-                    size="icon"
-                    onClick={() => setDeleteConfirm({ open: true, taskId: task.id })}
-                    className="size-8 text-destructive hover:text-destructive/90"
-                  >
-                    <Trash2 className="size-4" />
-                    <span className="sr-only">刪除任務</span>
-                  </Button>
-                </TableCell>
-              </TableRow>
-            );
-          })}
-        </TableBody>
-      </Table>
+                  return (
+                    <TableRow key={task.id}>
+                      <TableCell className="font-medium">
+                        <span>{task.name}</span>
+                      </TableCell>
+                      <TableCell>
+                        <Badge variant={statusConfig.variant}>{statusConfig.label}</Badge>
+                      </TableCell>
+                      <TableCell>
+                        <div className="flex items-center gap-2">
+                          <Progress value={task.progress || 0} className="w-[60px]" />
+                          <span className="text-sm text-muted-foreground">
+                            {task.progress || 0}%
+                          </span>
+                        </div>
+                      </TableCell>
+                      <TableCell>
+                        {task.dueDate ? format(new Date(task.dueDate), 'yyyy-MM-dd') : '-'}
+                      </TableCell>
+                      <TableCell>{format(new Date(task.created), 'yyyy-MM-dd')}</TableCell>
+                      <TableCell className="text-right">
+                        <Button
+                          variant="ghost"
+                          size="icon"
+                          onClick={() => setEditTask({ open: true, task: task })}
+                          className="size-8 text-primary hover:text-primary/90"
+                        >
+                          <Pencil className="size-4" />
+                          <span className="sr-only">编辑任务</span>
+                        </Button>
+                        <Button
+                          variant="ghost"
+                          size="icon"
+                          onClick={() => setDeleteConfirm({ open: true, taskId: task.id })}
+                          className="size-8 text-destructive hover:text-destructive/90"
+                        >
+                          <Trash2 className="size-4" />
+                          <span className="sr-only">刪除任務</span>
+                        </Button>
+                      </TableCell>
+                    </TableRow>
+                  );
+                })}
+          </TableBody>
+        </Table>
 
-      {/* 分頁控制 */}
-      <div className="flex items-center justify-between px-2">
-        <div className="text-sm text-gray-500">共 {total} 條記錄</div>
-        <div className="flex items-center space-x-2">
-          <button
-            onClick={() => setCurrentPage((prev) => Math.max(prev - 1, 1))}
-            disabled={currentPage === 1}
-            className="rounded border px-3 py-1 disabled:opacity-50"
-          >
-            上一頁
-          </button>
-          {getPageNumbers().map((number) => (
+        {/* 分頁控制 */}
+        <div className="mt-4 flex items-center justify-between px-2">
+          <div className="text-sm text-gray-500">
+            {isLoading ? <Skeleton className="h-4 w-[100px]" /> : `共 ${total} 條記錄`}
+          </div>
+          <div className="flex items-center space-x-2">
             <button
-              key={number}
-              onClick={() => setCurrentPage(number)}
-              className={`rounded border px-3 py-1 ${
-                currentPage === number ? 'bg-primary text-primary-foreground' : 'hover:bg-gray-100'
-              }`}
+              onClick={() => setCurrentPage((prev) => Math.max(prev - 1, 1))}
+              disabled={currentPage === 1}
+              className="rounded border px-3 py-1 disabled:opacity-50"
             >
-              {number}
+              上一頁
             </button>
-          ))}
-          <button
-            onClick={() => setCurrentPage((prev) => Math.min(prev + 1, totalPages))}
-            disabled={currentPage === totalPages}
-            className="rounded border px-3 py-1 disabled:opacity-50"
-          >
-            下一頁
-          </button>
+            {getPageNumbers().map((number) => (
+              <button
+                key={number}
+                onClick={() => setCurrentPage(number)}
+                className={`rounded border px-3 py-1 ${
+                  currentPage === number
+                    ? 'bg-primary text-primary-foreground'
+                    : 'hover:bg-gray-100'
+                }`}
+              >
+                {number}
+              </button>
+            ))}
+            <button
+              onClick={() => setCurrentPage((prev) => Math.min(prev + 1, totalPages))}
+              disabled={currentPage === totalPages}
+              className="rounded border px-3 py-1 disabled:opacity-50"
+            >
+              下一頁
+            </button>
+          </div>
         </div>
       </div>
 
@@ -344,18 +348,32 @@ export default function TaskList() {
   );
 }
 
-function useDebounce<T>(value: T, delay: number): T {
-  const [debouncedValue, setDebouncedValue] = useState<T>(value);
-
-  useEffect(() => {
-    const handler = setTimeout(() => {
-      setDebouncedValue(value);
-    }, delay);
-
-    return () => {
-      clearTimeout(handler);
-    };
-  }, [value, delay]);
-
-  return debouncedValue;
+export function TaskRowSkeleton() {
+  return (
+    <TableRow>
+      <TableCell>
+        <Skeleton className="h-4" />
+      </TableCell>
+      <TableCell>
+        <Skeleton className="h-6" />
+      </TableCell>
+      <TableCell>
+        <div className="flex items-center gap-2">
+          <Skeleton className="h-2 w-[60px]" />
+        </div>
+      </TableCell>
+      <TableCell>
+        <Skeleton className="h-4" />
+      </TableCell>
+      <TableCell>
+        <Skeleton className="h-4" />
+      </TableCell>
+      <TableCell className="text-right">
+        <div className="flex justify-end gap-2">
+          <Skeleton className="size-8" />
+          <Skeleton className="size-8" />
+        </div>
+      </TableCell>
+    </TableRow>
+  );
 }
