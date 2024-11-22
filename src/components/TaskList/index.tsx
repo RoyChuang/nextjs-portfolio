@@ -1,12 +1,13 @@
 'use client';
 
 import { format } from 'date-fns';
-import { Loader2, Pencil, Plus, Trash2 } from 'lucide-react';
-import { useState } from 'react';
+import { Loader2, Pencil, Plus, Search, Trash2 } from 'lucide-react';
+import { useEffect, useState } from 'react';
 
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { ConfirmDialog } from '@/components/ui/confirm-dialog';
+import { Input } from '@/components/ui/input';
 import { Progress } from '@/components/ui/progress';
 import {
   Select,
@@ -53,10 +54,15 @@ export default function TaskList() {
     open: false,
     task: null,
   });
+  const [searchInput, setSearchInput] = useState('');
+  const [search, setSearch] = useState('');
+  const [sort, setSort] = useState('-created');
 
   const { tasks, total, totalPages, isLoading, deleteTask, createTask, updateTask } = useTasks({
     page: currentPage,
     pageSize: pageSize,
+    search: search,
+    sort: sort,
   });
 
   const handlePageSizeChange = (value: string) => {
@@ -129,6 +135,22 @@ export default function TaskList() {
     }
   };
 
+  const handleSort = (field: string) => {
+    setSort(sort === field ? `-${field}` : field);
+  };
+
+  // 處理搜索按鈕點擊
+  const handleSearch = () => {
+    setSearch(searchInput);
+  };
+
+  // 處理按下 Enter 鍵
+  const handleKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
+    if (e.key === 'Enter') {
+      handleSearch();
+    }
+  };
+
   if (isLoading)
     return (
       <div className="flex min-h-[200px]">
@@ -139,10 +161,44 @@ export default function TaskList() {
   return (
     <div className="w-full space-y-4">
       <div className="flex items-center justify-between">
-        <Button onClick={() => setCreateDialogOpen(true)}>
-          <Plus className="mr-2 size-4" />
-          新增任務
-        </Button>
+        <div className="flex items-center gap-4">
+          <Button onClick={() => setCreateDialogOpen(true)}>
+            <Plus className="mr-2 size-4" />
+            新增任務
+          </Button>
+          <div className="flex gap-2">
+            <div className="relative">
+              <Input
+                placeholder="搜尋任務名稱..."
+                value={searchInput}
+                onChange={(e) => setSearchInput(e.target.value)}
+                onKeyDown={handleKeyDown}
+                className="w-[200px] pr-8"
+              />
+              <Button
+                variant="ghost"
+                size="icon"
+                className="absolute right-0 top-0 h-full px-2 hover:bg-transparent"
+                onClick={handleSearch}
+              >
+                <Search className="size-4 text-muted-foreground" />
+                <span className="sr-only">搜尋</span>
+              </Button>
+            </div>
+            {search && (
+              <Button
+                variant="ghost"
+                size="sm"
+                onClick={() => {
+                  setSearch('');
+                  setSearchInput('');
+                }}
+              >
+                清除
+              </Button>
+            )}
+          </div>
+        </div>
 
         <div className="flex items-center space-x-2">
           <span className="text-sm text-gray-500">每頁顯示：</span>
@@ -170,11 +226,21 @@ export default function TaskList() {
       <Table>
         <TableHeader>
           <TableRow>
-            <TableHead>任務名稱</TableHead>
-            <TableHead>狀態</TableHead>
-            <TableHead>進度</TableHead>
-            <TableHead>截止日期</TableHead>
-            <TableHead>創建時間</TableHead>
+            <TableHead onClick={() => handleSort('name')} className="cursor-pointer">
+              任務名稱 {sort.includes('name') && (sort.startsWith('-') ? '↓' : '↑')}
+            </TableHead>
+            <TableHead onClick={() => handleSort('status')} className="cursor-pointer">
+              狀態 {sort.includes('status') && (sort.startsWith('-') ? '↓' : '↑')}
+            </TableHead>
+            <TableHead onClick={() => handleSort('progress')} className="cursor-pointer">
+              進度 {sort.includes('progress') && (sort.startsWith('-') ? '↓' : '↑')}
+            </TableHead>
+            <TableHead onClick={() => handleSort('dueDate')} className="cursor-pointer">
+              截止日期 {sort.includes('dueDate') && (sort.startsWith('-') ? '↓' : '↑')}
+            </TableHead>
+            <TableHead onClick={() => handleSort('created')} className="cursor-pointer">
+              創建時間 {sort.includes('created') && (sort.startsWith('-') ? '↓' : '↑')}
+            </TableHead>
             <TableHead className="text-right">操作</TableHead>
           </TableRow>
         </TableHeader>
@@ -276,4 +342,20 @@ export default function TaskList() {
       />
     </div>
   );
+}
+
+function useDebounce<T>(value: T, delay: number): T {
+  const [debouncedValue, setDebouncedValue] = useState<T>(value);
+
+  useEffect(() => {
+    const handler = setTimeout(() => {
+      setDebouncedValue(value);
+    }, delay);
+
+    return () => {
+      clearTimeout(handler);
+    };
+  }, [value, delay]);
+
+  return debouncedValue;
 }

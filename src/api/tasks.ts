@@ -4,6 +4,8 @@ import { Task, TaskFormValues } from '@/types/task';
 export interface GetTasksParams {
   page: number;
   pageSize: number;
+  search?: string;
+  sort?: string;
 }
 
 export interface TasksResponse {
@@ -12,9 +14,17 @@ export interface TasksResponse {
   totalPages: number;
 }
 
-export const getTasks = async ({ page, pageSize }: GetTasksParams): Promise<TasksResponse> => {
+export const getTasks = async ({
+  page,
+  pageSize,
+  search,
+  sort = '-created',
+}: GetTasksParams): Promise<TasksResponse> => {
+  const filter = search ? `name ~ "${search}"` : '';
+
   const response = await pb.collection('tasks').getList(page, pageSize, {
-    sort: '-created',
+    sort: sort,
+    filter: filter,
   });
 
   return {
