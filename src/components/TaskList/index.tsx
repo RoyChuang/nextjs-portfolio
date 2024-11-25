@@ -225,7 +225,7 @@ export default function TaskList() {
               <TableHead onClick={() => handleSort('name')} className="flex-1 cursor-pointer">
                 任務名稱 {sort.includes('name') && (sort.startsWith('-') ? '↓' : '↑')}
               </TableHead>
-              <TableHead onClick={() => handleSort('status')} className="w-[120px] cursor-pointer">
+              <TableHead onClick={() => handleSort('status')} className="w-[100px] cursor-pointer">
                 狀態 {sort.includes('status') && (sort.startsWith('-') ? '↓' : '↑')}
               </TableHead>
               <TableHead
@@ -237,7 +237,7 @@ export default function TaskList() {
               <TableHead onClick={() => handleSort('dueDate')} className="w-[120px] cursor-pointer">
                 截止日期 {sort.includes('dueDate') && (sort.startsWith('-') ? '↓' : '↑')}
               </TableHead>
-              <TableHead onClick={() => handleSort('created')} className="w-[120px] cursor-pointer">
+              <TableHead onClick={() => handleSort('created')} className="w-[100px] cursor-pointer">
                 創建時間 {sort.includes('created') && (sort.startsWith('-') ? '↓' : '↑')}
               </TableHead>
               <TableHead className="w-[100px] text-right">操作</TableHead>

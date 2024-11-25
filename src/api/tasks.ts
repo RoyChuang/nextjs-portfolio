@@ -56,3 +56,11 @@ export const updateTask = async (id: string, data: Partial<TaskFormValues>) => {
 export const deleteTask = async (id: string) => {
   return await pb.collection('tasks').delete(id);
 };
+
+export const getTaskStatusCounts = async () => {
+  const response = await fetch(
+    'https://fellow-letter.pockethost.io/api/collections/statusCount/records'
+  );
+  const data = await response.json();
+  return data.items;
+};
