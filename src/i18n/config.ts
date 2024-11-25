@@ -23,6 +23,9 @@ i18next
     defaultNS: 'common',
     interpolation: {
       escapeValue: false,
+      skipOnVariables: false, // 添加這行，確保變量被正確處理
+      prefix: '{', // 添加這行，指定變量前綴
+      suffix: '}', // 添加這行，指定變量後綴
     },
     detection: {
       order: ['cookie'],

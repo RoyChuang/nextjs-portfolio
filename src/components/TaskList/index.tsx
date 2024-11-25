@@ -1,14 +1,12 @@
 'use client';
 
-import { format } from 'date-fns';
-import { Pencil, Plus, Search, Trash2 } from 'lucide-react';
+import { Plus, Search } from 'lucide-react';
 import { useState } from 'react';
+import { useTranslation } from 'react-i18next';
 
-import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { ConfirmDialog } from '@/components/ui/confirm-dialog';
 import { Input } from '@/components/ui/input';
-import { Progress } from '@/components/ui/progress';
 import {
   Select,
   SelectContent,
@@ -16,34 +14,18 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@/components/ui/select';
-import { Skeleton } from '@/components/ui/skeleton';
-import {
-  Table,
-  TableBody,
-  TableCell,
-  TableHead,
-  TableHeader,
-  TableRow,
-} from '@/components/ui/table';
 import { useToast } from '@/hooks/use-toast';
 import { useTasks } from '@/hooks/useTasks';
-import { Task, TaskFormValues, TaskStatus } from '@/types/task';
+import { Task, TaskFormValues } from '@/types/task';
 
 import { TaskDialog } from './TaskDialog';
-
-const getStatusConfig = (status: TaskStatus) => {
-  const config = {
-    0: { label: '待處理', variant: 'default' as const },
-    1: { label: '進行中', variant: 'warning' as const },
-    2: { label: '已完成', variant: 'success' as const },
-  };
-  return config[status];
-};
+import { TaskTable } from './TaskTable';
 
 const PAGE_SIZE_OPTIONS = [5, 10, 20];
 
 export default function TaskList() {
   const { toast } = useToast();
+  const { t } = useTranslation();
   const [currentPage, setCurrentPage] = useState(1);
   const [pageSize, setPageSize] = useState(10);
   const [createDialogOpen, setCreateDialogOpen] = useState(false);
@@ -72,21 +54,19 @@ export default function TaskList() {
     setCurrentPage(1); // 重置到第一頁
   };
 
-  // 頁碼按鈕生成
-  const getPageNumbers = () => {
-    const pages = [];
-    for (let i = 1; i <= totalPages; i++) {
-      pages.push(i);
-    }
-    return pages;
-  };
-
   const handleCreateTask = async (data: TaskFormValues) => {
     try {
       await createTask(data);
       setCreateDialogOpen(false);
+      toast({
+        description: t('taskList.dialog.createSuccess'),
+      });
     } catch (error) {
-      console.log('Failed to create task:', error);
+      console.log(t('taskList.debug.failedCreateTask'), error);
+      toast({
+        variant: 'destructive',
+        description: t('taskList.dialog.createError'),
+      });
     }
   };
 
@@ -96,13 +76,13 @@ export default function TaskList() {
     try {
       await deleteTask(deleteConfirm.taskId);
       toast({
-        description: '任務已刪除',
+        description: t('taskList.dialog.deleteSuccess'),
       });
     } catch (error) {
       console.log('Failed to delete task:', error);
       toast({
         variant: 'destructive',
-        description: '刪除任務失敗',
+        description: t('taskList.dialog.deleteError'),
       });
     } finally {
       setDeleteConfirm({ open: false, taskId: null });
@@ -119,19 +99,17 @@ export default function TaskList() {
         dueDate: data.dueDate ? data.dueDate.toISOString() : null,
       };
 
-      console.log('更新任務數據:', payload); // 調試用
-
       await updateTask(editTask.task.id, payload);
 
       setEditTask({ open: false, task: null });
       toast({
-        description: '任務已更新',
+        description: t('taskList.dialog.updateSuccess'),
       });
     } catch (error) {
       console.error('更新任務失敗:', error);
       toast({
         variant: 'destructive',
-        description: '更新任務失敗',
+        description: t('taskList.dialog.updateError'),
       });
     }
   };
@@ -166,12 +144,12 @@ export default function TaskList() {
         <div className="flex items-center gap-4">
           <Button onClick={() => setCreateDialogOpen(true)}>
             <Plus className="mr-2 size-4" />
-            新增任務
+            {t('taskList.addTask')}
           </Button>
           <div className="flex gap-2">
             <div className="relative">
               <Input
-                placeholder="搜尋任務名稱..."
+                placeholder={t('taskList.search.placeholder')}
                 value={searchInput}
                 onChange={(e) => setSearchInput(e.target.value)}
                 onKeyDown={handleKeyDown}
@@ -184,22 +162,22 @@ export default function TaskList() {
                 onClick={handleSearch}
               >
                 <Search className="size-4 text-muted-foreground" />
-                <span className="sr-only">搜尋</span>
+                <span className="sr-only">{t('taskList.search.button')}</span>
               </Button>
             </div>
             {search && (
               <Button variant="ghost" size="sm" onClick={handleClearSearch}>
-                清除
+                {t('taskList.search.clear')}
               </Button>
             )}
           </div>
         </div>
 
         <div className="flex items-center space-x-2">
-          <span className="text-sm text-gray-500">每頁顯示：</span>
+          <span className="text-sm text-gray-500">{t('taskList.perPage.label')}</span>
           <Select value={pageSize.toString()} onValueChange={handlePageSizeChange}>
             <SelectTrigger className="w-[80px]">
-              <SelectValue placeholder="選擇數量" />
+              <SelectValue placeholder={t('taskList.perPage.placeholder')} />
             </SelectTrigger>
             <SelectContent>
               {PAGE_SIZE_OPTIONS.map((size) => (
@@ -218,127 +196,26 @@ export default function TaskList() {
         onSubmit={handleCreateTask}
       />
 
-      <div className="relative">
-        <Table>
-          <TableHeader>
-            <TableRow>
-              <TableHead onClick={() => handleSort('name')} className="flex-1 cursor-pointer">
-                任務名稱 {sort.includes('name') && (sort.startsWith('-') ? '↓' : '↑')}
-              </TableHead>
-              <TableHead onClick={() => handleSort('status')} className="w-[100px] cursor-pointer">
-                狀態 {sort.includes('status') && (sort.startsWith('-') ? '↓' : '↑')}
-              </TableHead>
-              <TableHead
-                onClick={() => handleSort('progress')}
-                className="w-[120px] cursor-pointer"
-              >
-                進度 {sort.includes('progress') && (sort.startsWith('-') ? '↓' : '↑')}
-              </TableHead>
-              <TableHead onClick={() => handleSort('dueDate')} className="w-[120px] cursor-pointer">
-                截止日期 {sort.includes('dueDate') && (sort.startsWith('-') ? '↓' : '↑')}
-              </TableHead>
-              <TableHead onClick={() => handleSort('created')} className="w-[100px] cursor-pointer">
-                創建時間 {sort.includes('created') && (sort.startsWith('-') ? '↓' : '↑')}
-              </TableHead>
-              <TableHead className="w-[100px] text-right">操作</TableHead>
-            </TableRow>
-          </TableHeader>
-          <TableBody>
-            {isLoading
-              ? // 顯示多個骨架行
-                Array.from({ length: pageSize }).map((_, index) => <TaskRowSkeleton key={index} />)
-              : tasks.map((task) => {
-                  const statusConfig = getStatusConfig(task.status);
-
-                  return (
-                    <TableRow key={task.id}>
-                      <TableCell className="font-medium">
-                        <span>{task.name}</span>
-                      </TableCell>
-                      <TableCell>
-                        <Badge variant={statusConfig.variant}>{statusConfig.label}</Badge>
-                      </TableCell>
-                      <TableCell>
-                        <div className="flex items-center gap-2">
-                          <Progress value={task.progress || 0} className="w-[60px]" />
-                          <span className="text-sm text-muted-foreground">
-                            {task.progress || 0}%
-                          </span>
-                        </div>
-                      </TableCell>
-                      <TableCell>
-                        {task.dueDate ? format(new Date(task.dueDate), 'yyyy-MM-dd') : '-'}
-                      </TableCell>
-                      <TableCell>{format(new Date(task.created), 'yyyy-MM-dd')}</TableCell>
-                      <TableCell className="text-right">
-                        <Button
-                          variant="ghost"
-                          size="icon"
-                          onClick={() => setEditTask({ open: true, task: task })}
-                          className="size-8 text-primary hover:text-primary/90"
-                        >
-                          <Pencil className="size-4" />
-                          <span className="sr-only">编辑任务</span>
-                        </Button>
-                        <Button
-                          variant="ghost"
-                          size="icon"
-                          onClick={() => setDeleteConfirm({ open: true, taskId: task.id })}
-                          className="size-8 text-destructive hover:text-destructive/90"
-                        >
-                          <Trash2 className="size-4" />
-                          <span className="sr-only">刪除任務</span>
-                        </Button>
-                      </TableCell>
-                    </TableRow>
-                  );
-                })}
-          </TableBody>
-        </Table>
-
-        {/* 分頁控制 */}
-        <div className="mt-4 flex items-center justify-between px-2">
-          <div className="text-sm text-gray-500">
-            {isLoading ? <Skeleton className="h-4 w-[100px]" /> : `共 ${total} 條記錄`}
-          </div>
-          <div className="flex items-center space-x-2">
-            <button
-              onClick={() => setCurrentPage((prev) => Math.max(prev - 1, 1))}
-              disabled={currentPage === 1}
-              className="rounded border px-3 py-1 disabled:opacity-50"
-            >
-              上一頁
-            </button>
-            {getPageNumbers().map((number) => (
-              <button
-                key={number}
-                onClick={() => setCurrentPage(number)}
-                className={`rounded border px-3 py-1 ${
-                  currentPage === number
-                    ? 'bg-primary text-primary-foreground'
-                    : 'hover:bg-gray-100'
-                }`}
-              >
-                {number}
-              </button>
-            ))}
-            <button
-              onClick={() => setCurrentPage((prev) => Math.min(prev + 1, totalPages))}
-              disabled={currentPage === totalPages}
-              className="rounded border px-3 py-1 disabled:opacity-50"
-            >
-              下一頁
-            </button>
-          </div>
-        </div>
-      </div>
+      <TaskTable
+        tasks={tasks}
+        isLoading={isLoading}
+        pageSize={pageSize}
+        currentPage={currentPage}
+        totalPages={totalPages}
+        total={total}
+        sort={sort}
+        onSort={handleSort}
+        onEdit={(task) => setEditTask({ open: true, task })}
+        onDelete={(taskId) => setDeleteConfirm({ open: true, taskId })}
+        onPageChange={setCurrentPage}
+      />
 
       <ConfirmDialog
         open={deleteConfirm.open}
         onOpenChange={(open) => setDeleteConfirm({ ...deleteConfirm, open })}
         onConfirm={handleDeleteConfirm}
-        title="確認刪除"
-        description="確認要刪除這個任務嗎？"
+        title={t('taskList.dialog.deleteTitle')}
+        description={t('taskList.dialog.deleteDescription')}
       />
 
       <TaskDialog
@@ -348,35 +225,5 @@ export default function TaskList() {
         defaultValues={editTask.task || undefined}
       />
     </div>
-  );
-}
-
-export function TaskRowSkeleton() {
-  return (
-    <TableRow>
-      <TableCell>
-        <Skeleton className="h-4" />
-      </TableCell>
-      <TableCell>
-        <Skeleton className="h-6" />
-      </TableCell>
-      <TableCell>
-        <div className="flex items-center gap-2">
-          <Skeleton className="h-2 w-[60px]" />
-        </div>
-      </TableCell>
-      <TableCell>
-        <Skeleton className="h-4" />
-      </TableCell>
-      <TableCell>
-        <Skeleton className="h-4" />
-      </TableCell>
-      <TableCell className="text-right">
-        <div className="flex justify-end gap-2">
-          <Skeleton className="size-8" />
-          <Skeleton className="size-8" />
-        </div>
-      </TableCell>
-    </TableRow>
   );
 }

@@ -20,6 +20,12 @@ const initI18next = async (lang: string) => {
       fallbackLng: 'en',
       ns: ['common'],
       defaultNS: 'common',
+      interpolation: {
+        escapeValue: false,
+        skipOnVariables: false,
+        prefix: '{',
+        suffix: '}',
+      },
     });
   return i18nInstance;
 };

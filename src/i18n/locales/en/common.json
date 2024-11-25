@@ -21,5 +21,51 @@
   "common": {
     "logout": "Logout",
     "loading": "Loading..."
+  },
+  "pagination": {
+    "showing": "Showing {start} to {end} of {total} entries",
+    "previous": "Previous",
+    "next": "Next"
+  },
+  "taskList": {
+    "addTask": "Add Task",
+    "search": {
+      "placeholder": "Search tasks...",
+      "button": "Search",
+      "clear": "Clear"
+    },
+    "perPage": {
+      "label": "Per page:",
+      "placeholder": "Select"
+    },
+    "table": {
+      "name": "Task Name",
+      "status": "Status",
+      "progress": "Progress",
+      "dueDate": "Due Date",
+      "created": "Created",
+      "actions": "Actions",
+      "edit": "Edit Task",
+      "delete": "Delete Task"
+    },
+    "status": {
+      "pending": "Pending",
+      "inProgress": "In Progress",
+      "completed": "Completed"
+    },
+    "dialog": {
+      "deleteTitle": "Confirm Delete",
+      "deleteDescription": "Are you sure you want to delete this task?",
+      "deleteSuccess": "Task deleted",
+      "deleteError": "Failed to delete task",
+      "updateSuccess": "Task updated",
+      "updateError": "Failed to update task",
+      "createSuccess": "Task created",
+      "createError": "Failed to create task"
+    },
+    "debug": {
+      "failedCreateTask": "Failed to create task:",
+      "failedUpdateTask": "Failed to update task:"
+    }
   }
 } 
