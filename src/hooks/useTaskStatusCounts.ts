@@ -6,8 +6,8 @@ export function useTaskStatusCounts() {
   return useQuery({
     queryKey: ['taskStatusCounts'],
     queryFn: getTaskStatusCounts,
-    staleTime: 0, // 數據立即變為過時
-    refetchOnWindowFocus: true, // 窗口聚焦時重新獲取
-    refetchInterval: 1000 * 30, // 每30秒自動重新獲取
+    staleTime: Infinity, // 因為有 realtime 更新，所以不需要自動過期
+    refetchOnWindowFocus: false, // 因為有 realtime 更新，不需要在窗口聚焦時重新獲取
+    refetchInterval: false, // 因為有 realtime 更新，不需要定時獲取
   });
 }
