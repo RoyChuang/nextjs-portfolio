@@ -20,12 +20,17 @@
   },
   "common": {
     "logout": "登出",
-    "loading": "載入中..."
+    "loading": "載入中...",
+    "save": "儲存",
+    "create": "創建"
   },
   "pagination": {
-    "showing": "顯示第 {start} 到 {end} 條，共 {total} 條",
+    "showing": "顯示第 {start} 到第 {end} 筆，共 {total} 筆",
+    "pageInfo": "第 {current} 頁，共 {total} 頁",
+    "first": "第一頁",
     "previous": "上一頁",
-    "next": "下一頁"
+    "next": "下一頁",
+    "last": "最後一頁"
   },
   "taskList": {
     "addTask": "新增任務",
@@ -66,6 +71,51 @@
     "debug": {
       "failedCreateTask": "創建任務失敗:",
       "failedUpdateTask": "更新任務失敗:"
+    }
+  },
+  "userList": {
+    "addUser": "新增用戶",
+    "search": {
+      "placeholder": "搜尋用戶...",
+      "clear": "清除"
+    },
+    "perPage": {
+      "label": "每頁顯示：",
+      "placeholder": "選擇數量"
+    },
+    "table": {
+      "name": "姓名",
+      "email": "電子郵件",
+      "role": "角色",
+      "created": "創建時間",
+      "actions": "操作",
+      "edit": "編輯用戶",
+      "delete": "刪除用戶"
+    },
+    "dialog": {
+      "createTitle": "新增用戶",
+      "editTitle": "編輯用戶",
+      "deleteTitle": "確認刪除",
+      "deleteDescription": "確定要刪除這個用戶嗎？",
+      "createSuccess": "用戶創建成功",
+      "createError": "創建用戶失敗",
+      "updateSuccess": "用戶更新成功",
+      "updateError": "更新用戶失敗",
+      "deleteSuccess": "用戶刪除成功",
+      "deleteError": "刪除用戶失敗"
+    },
+    "form": {
+      "name": "姓名",
+      "email": "電子郵件",
+      "role": "角色",
+      "password": "密碼",
+      "newPassword": "新密碼",
+      "passwordPlaceholder": "留空保持不變",
+      "selectRole": "選擇角色",
+      "roles": {
+        "user": "一般用戶",
+        "admin": "管理員"
+      }
     }
   }
 } 
