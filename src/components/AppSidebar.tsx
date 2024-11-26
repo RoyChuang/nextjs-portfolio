@@ -1,4 +1,4 @@
-import { Inbox, LayoutDashboard, User } from 'lucide-react';
+import { Inbox, LayoutDashboard, Shield, User } from 'lucide-react';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 
@@ -26,10 +26,18 @@ const items = [
     url: '/tasks',
     icon: Inbox,
   },
+];
+
+const organizationItems = [
   {
     title: 'Users',
     url: '/users',
     icon: User,
+  },
+  {
+    title: 'Roles',
+    url: '/roles',
+    icon: Shield,
   },
 ];
 
@@ -45,6 +53,23 @@ export function AppSidebar() {
           <SidebarGroupContent>
             <SidebarMenu>
               {items.map((item) => (
+                <SidebarMenuItem key={item.title}>
+                  <SidebarMenuButton asChild isActive={pathname === item.url}>
+                    <Link href={item.url}>
+                      <item.icon />
+                      <span>{item.title}</span>
+                    </Link>
+                  </SidebarMenuButton>
+                </SidebarMenuItem>
+              ))}
+            </SidebarMenu>
+          </SidebarGroupContent>
+        </SidebarGroup>
+        <SidebarGroup>
+          <SidebarGroupLabel>Organization</SidebarGroupLabel>
+          <SidebarGroupContent>
+            <SidebarMenu>
+              {organizationItems.map((item) => (
                 <SidebarMenuItem key={item.title}>
                   <SidebarMenuButton asChild isActive={pathname === item.url}>
                     <Link href={item.url}>

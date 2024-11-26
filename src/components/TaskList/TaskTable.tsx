@@ -85,8 +85,9 @@ export function TaskTable({
             <span className="text-sm text-muted-foreground">{task.progress || 0}%</span>
           </div>
         </TableCell>
-        <TableCell>{task.dueDate ? format(new Date(task.dueDate), 'yyyy-MM-dd') : '-'}</TableCell>
         <TableCell>{format(new Date(task.created), 'yyyy-MM-dd')}</TableCell>
+        <TableCell>{task.dueDate ? format(new Date(task.dueDate), 'yyyy-MM-dd') : '-'}</TableCell>
+
         <TableCell className="text-right">
           <Button
             variant="ghost"
@@ -120,8 +121,8 @@ export function TaskTable({
               {renderHeaderCell('name', 'taskList.table.name')}
               {renderHeaderCell('status', 'taskList.table.status', 'w-[100px]')}
               {renderHeaderCell('progress', 'taskList.table.progress', 'w-[120px]')}
-              {renderHeaderCell('dueDate', 'taskList.table.dueDate', 'w-[120px]')}
               {renderHeaderCell('created', 'taskList.table.created', 'w-[100px]')}
+              {renderHeaderCell('dueDate', 'taskList.table.dueDate', 'w-[100px]')}
               <TableHead className="w-[100px] text-right">{t('taskList.table.actions')}</TableHead>
             </TableRow>
           </TableHeader>
