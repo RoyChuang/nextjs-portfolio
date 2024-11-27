@@ -17,6 +17,7 @@ import {
   TableHeader,
   TableRow,
 } from '@/components/ui/table';
+import { useUsers } from '@/hooks/useUsers';
 import { Task, TaskStatus } from '@/types/task';
 
 interface TaskTableProps {
@@ -47,6 +48,7 @@ export function TaskTable({
   onPageChange,
 }: TaskTableProps) {
   const { t } = useTranslation();
+  const { users } = useUsers({ page: 1, pageSize: 100 });
 
   const getStatusConfig = (status: TaskStatus) => {
     const config = {
@@ -55,6 +57,12 @@ export function TaskTable({
       2: { label: t('taskList.status.completed'), variant: 'success' as const },
     };
     return config[status];
+  };
+
+  const getUserName = (userId?: string) => {
+    if (!userId) return t('common.unknown');
+    const user = users.find((user) => user.id === userId);
+    return user ? user.name : t('common.unknown');
   };
 
   // 渲染表頭列
@@ -85,6 +93,7 @@ export function TaskTable({
             <span className="text-sm text-muted-foreground">{task.progress || 0}%</span>
           </div>
         </TableCell>
+        <TableCell>{getUserName(task.assignedTo)}</TableCell>
         <TableCell>{format(new Date(task.created), 'yyyy-MM-dd')}</TableCell>
         <TableCell>{task.dueDate ? format(new Date(task.dueDate), 'yyyy-MM-dd') : '-'}</TableCell>
 
@@ -121,6 +130,7 @@ export function TaskTable({
               {renderHeaderCell('name', 'taskList.table.name')}
               {renderHeaderCell('status', 'taskList.table.status', 'w-[100px]')}
               {renderHeaderCell('progress', 'taskList.table.progress', 'w-[120px]')}
+              {renderHeaderCell('assignedTo', 'taskList.table.assignedTo', 'w-[120px]')}
               {renderHeaderCell('created', 'taskList.table.created', 'w-[100px]')}
               {renderHeaderCell('dueDate', 'taskList.table.dueDate', 'w-[100px]')}
               <TableHead className="w-[100px] text-right">{t('taskList.table.actions')}</TableHead>

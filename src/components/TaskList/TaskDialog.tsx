@@ -5,6 +5,7 @@ import { format } from 'date-fns';
 import { Calendar as CalendarIcon } from 'lucide-react';
 import { useEffect } from 'react';
 import { useForm } from 'react-hook-form';
+import { useTranslation } from 'react-i18next';
 import * as z from 'zod';
 
 import { Button } from '@/components/ui/button';
@@ -35,6 +36,7 @@ import {
 } from '@/components/ui/select';
 // 假設你有一個 Slider 組件
 import { Slider } from '@/components/ui/slider';
+import { useUsers } from '@/hooks/useUsers';
 import { cn } from '@/lib/utils';
 import { Task } from '@/types/task';
 
@@ -43,6 +45,7 @@ const taskFormSchema = z.object({
   status: z.number().min(0).max(2),
   progress: z.number().min(0).max(100).default(0),
   dueDate: z.date().optional(),
+  assignedTo: z.string().optional(),
 });
 
 type TaskFormValues = z.infer<typeof taskFormSchema>;
@@ -55,6 +58,8 @@ interface TaskDialogProps {
 }
 
 export function TaskDialog({ open, onOpenChange, onSubmit, defaultValues }: TaskDialogProps) {
+  const { t } = useTranslation();
+  const { users } = useUsers({ page: 1, pageSize: 100 }); // 獲取所有用戶
   const isEditing = !!defaultValues;
 
   const form = useForm<TaskFormValues>({
@@ -63,6 +68,7 @@ export function TaskDialog({ open, onOpenChange, onSubmit, defaultValues }: Task
       name: '',
       status: 0,
       progress: 0,
+      assignedTo: '', // 添加默認值
     },
   });
 
@@ -73,22 +79,35 @@ export function TaskDialog({ open, onOpenChange, onSubmit, defaultValues }: Task
         status: defaultValues.status,
         progress: defaultValues.progress || 0,
         dueDate: defaultValues.dueDate ? new Date(defaultValues.dueDate) : undefined,
+        assignedTo: defaultValues.assignedTo || '', // 設置指派用戶
       });
     } else {
       form.reset({
         name: '',
         status: 0,
         progress: 0,
+        assignedTo: '',
       });
     }
   }, [form, defaultValues, open]);
 
   const handleSubmit = async (data: TaskFormValues) => {
     try {
-      await onSubmit(data);
+      // 確保所有字段都被包含在更新數據中
+      const formData: TaskFormValues = {
+        name: data.name,
+        status: data.status,
+        progress: data.progress,
+        dueDate: data.dueDate,
+        // 明確包含 assignedTo 字段
+        assignedTo: data.assignedTo === 'unassigned' ? null : data.assignedTo,
+      };
+
+      await onSubmit(formData);
       form.reset();
+      onOpenChange(false);
     } catch (error) {
-      console.log('Failed to create task:', error);
+      console.error('Failed to create/update task:', error);
     }
   };
 
@@ -195,6 +214,35 @@ export function TaskDialog({ open, onOpenChange, onSubmit, defaultValues }: Task
                       />
                     </PopoverContent>
                   </Popover>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+
+            <FormField
+              control={form.control}
+              name="assignedTo"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>{t('taskList.form.assignedTo')}</FormLabel>
+                  <Select
+                    value={field.value || 'unassigned'}
+                    onValueChange={(value) => {
+                      field.onChange(value);
+                    }}
+                  >
+                    <SelectTrigger>
+                      <SelectValue placeholder={t('taskList.form.selectUser')} />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="unassigned">{t('taskList.form.unassigned')}</SelectItem>
+                      {users.map((user) => (
+                        <SelectItem key={user.id} value={user.id}>
+                          {user.name}
+                        </SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
                   <FormMessage />
                 </FormItem>
               )}

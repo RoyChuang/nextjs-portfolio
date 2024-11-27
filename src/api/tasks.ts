@@ -44,10 +44,10 @@ export const createTask = async (data: TaskFormValues): Promise<Task> => {
 };
 
 export const updateTask = async (id: string, data: Partial<TaskFormValues>) => {
-  console.log('🚀 ~ updateTask ~ data:', id, data);
   const payload = {
     ...data,
     dueDate: data.dueDate ? data.dueDate : null,
+    assignedTo: data.assignedTo === undefined ? null : data.assignedTo,
   };
 
   return await pb.collection('tasks').update(id, payload);

@@ -97,6 +97,7 @@ export default function TaskList() {
         status: data.status,
         progress: data.progress,
         dueDate: data.dueDate ? data.dueDate.toISOString() : null,
+        assignedTo: data.assignedTo,
       };
 
       await updateTask(editTask.task.id, payload);

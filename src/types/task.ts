@@ -7,6 +7,7 @@ export const taskFormSchema = z.object({
   status: z.number().min(0).max(2),
   progress: z.number().min(0).max(100).default(0),
   dueDate: z.date().optional(),
+  assignedTo: z.string().optional(),
 });
 
 export type TaskFormValues = z.infer<typeof taskFormSchema>;
@@ -18,4 +19,5 @@ export interface Task {
   progress?: number;
   dueDate?: string;
   created: string;
+  assignedTo?: string;
 }

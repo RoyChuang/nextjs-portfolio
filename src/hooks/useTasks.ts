@@ -22,7 +22,12 @@ export function useTasks(params: GetTasksParams) {
 
   const { mutateAsync: updateTaskMutation } = useMutation({
     mutationFn: (params: { id: string; data: Partial<TaskFormValues> }) => {
-      return updateTask(params.id, params.data);
+      const updateData = {
+        ...params.data,
+        assignedTo: params.data.assignedTo === 'unassigned' ? null : params.data.assignedTo,
+      };
+      console.log('Update mutation data:', updateData);
+      return updateTask(params.id, updateData);
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['tasks'] });

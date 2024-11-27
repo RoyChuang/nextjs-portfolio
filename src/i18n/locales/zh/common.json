@@ -23,7 +23,7 @@
     "loading": "載入中...",
     "save": "儲存",
     "create": "創建",
-    "unknown": "未知"
+    "unknown": ""
   },
   "pagination": {
     "showing": "顯示第 {start} 到第 {end} 筆，共 {total} 筆",
@@ -36,7 +36,7 @@
   "taskList": {
     "addTask": "新增任務",
     "search": {
-      "placeholder": "搜尋任務名稱...",
+      "placeholder": "搜尋任務...",
       "button": "搜尋",
       "clear": "清除"
     },
@@ -52,26 +52,42 @@
       "created": "創建時間",
       "actions": "操作",
       "edit": "編輯任務",
-      "delete": "刪除任務"
+      "delete": "刪除任務",
+      "assignedTo": "指派給"
     },
     "status": {
       "pending": "待處理",
       "inProgress": "進行中",
       "completed": "已完成"
     },
+    "form": {
+      "title": "任務詳情",
+      "name": "任務名稱",
+      "namePlaceholder": "請輸入任務名稱",
+      "status": "狀態",
+      "selectStatus": "選擇狀態",
+      "progress": "進度",
+      "dueDate": "截止日期",
+      "selectDate": "選擇日期",
+      "assignedTo": "指派給",
+      "selectUser": "選擇用戶",
+      "unassigned": "未指派",
+      "cancel": "取消",
+      "confirm": "確認",
+      "createTitle": "新增任務",
+      "editTitle": "編輯任務",
+      "createDescription": "填寫新任務的詳細信息",
+      "editDescription": "修改任務的詳細信息"
+    },
     "dialog": {
       "deleteTitle": "確認刪除",
-      "deleteDescription": "確認要刪除這個任務嗎？",
+      "deleteDescription": "確定要刪除這個任務嗎？",
       "deleteSuccess": "任務已刪除",
       "deleteError": "刪除任務失敗",
       "updateSuccess": "任務已更新",
       "updateError": "更新任務失敗",
       "createSuccess": "任務已創建",
       "createError": "創建任務失敗"
-    },
-    "debug": {
-      "failedCreateTask": "創建任務失敗:",
-      "failedUpdateTask": "更新任務失敗:"
     }
   },
   "userList": {
@@ -147,7 +163,7 @@
       "createSuccess": "角色建立成功",
       "updateSuccess": "角色更新成功",
       "deleteSuccess": "角色刪除成功",
-      "error": "操作���敗，請稍後再試"
+      "error": "操作敗，請稍後再試"
     },
     "form": {
       "rolename": {

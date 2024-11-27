@@ -23,7 +23,7 @@
     "loading": "Loading...",
     "save": "Save",
     "create": "Create",
-    "unknown": "Unknown"
+    "unknown": ""
   },
   "pagination": {
     "showing": "Showing {start} to {end} of {total} entries",
@@ -52,26 +52,42 @@
       "created": "Created",
       "actions": "Actions",
       "edit": "Edit Task",
-      "delete": "Delete Task"
+      "delete": "Delete Task",
+      "assignedTo": "Assigned To"
     },
     "status": {
       "pending": "Pending",
       "inProgress": "In Progress",
       "completed": "Completed"
     },
+    "form": {
+      "title": "Task Details",
+      "name": "Task Name",
+      "namePlaceholder": "Enter task name",
+      "status": "Status",
+      "selectStatus": "Select status",
+      "progress": "Progress",
+      "dueDate": "Due Date",
+      "selectDate": "Select date",
+      "assignedTo": "Assigned To",
+      "selectUser": "Select User",
+      "unassigned": "Unassigned",
+      "cancel": "Cancel",
+      "confirm": "Confirm",
+      "createTitle": "Create Task",
+      "editTitle": "Edit Task",
+      "createDescription": "Fill in the details for the new task",
+      "editDescription": "Modify the task details"
+    },
     "dialog": {
       "deleteTitle": "Confirm Delete",
       "deleteDescription": "Are you sure you want to delete this task?",
-      "deleteSuccess": "Task deleted",
+      "deleteSuccess": "Task deleted successfully",
       "deleteError": "Failed to delete task",
-      "updateSuccess": "Task updated",
+      "updateSuccess": "Task updated successfully",
       "updateError": "Failed to update task",
-      "createSuccess": "Task created",
+      "createSuccess": "Task created successfully",
       "createError": "Failed to create task"
-    },
-    "debug": {
-      "failedCreateTask": "Failed to create task:",
-      "failedUpdateTask": "Failed to update task:"
     }
   },
   "userList": {
