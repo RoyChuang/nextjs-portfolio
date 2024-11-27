@@ -11,14 +11,16 @@ interface PaginationProps {
   total: number;
   pageSize: number;
   onPageChange: (page: number) => void;
+  className?: string;
 }
 
 export function Pagination({
-  currentPage,
-  totalPages,
-  total,
-  pageSize,
+  currentPage = 1,
+  totalPages = 1,
+  total = 0,
+  pageSize = 10,
   onPageChange,
+  className = 'p-4',
 }: PaginationProps) {
   const { t } = useTranslation('common');
 
@@ -57,13 +59,13 @@ export function Pagination({
     return pages;
   };
 
-  const startRecord = (currentPage - 1) * pageSize + 1;
+  const startRecord = Math.max((currentPage - 1) * pageSize + 1, 1);
   const endRecord = Math.min(currentPage * pageSize, total);
 
   if (totalPages <= 1) return null;
 
   return (
-    <div className="flex items-center justify-between">
+    <div className={`flex items-center justify-between ${className}`}>
       <div className="text-sm text-muted-foreground">
         {t('pagination.showing', {
           start: startRecord.toString(),

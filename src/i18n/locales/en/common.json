@@ -117,5 +117,40 @@
         "admin": "Administrator"
       }
     }
+  },
+  "roleList": {
+    "addRole": "Add Role",
+    "search": {
+      "placeholder": "Search roles...",
+      "clear": "Clear"
+    },
+    "perPage": {
+      "label": "Per page:",
+      "placeholder": "Select"
+    },
+    "table": {
+      "rolename": "Role Name",
+      "created": "Created Date",
+      "actions": "Actions",
+      "edit": "Edit",
+      "delete": "Delete"
+    },
+    "dialog": {
+      "createTitle": "Create Role",
+      "editTitle": "Edit Role",
+      "deleteTitle": "Delete Role",
+      "deleteDescription": "Are you sure you want to delete this role? This action cannot be undone.",
+      "createSuccess": "Role created successfully",
+      "updateSuccess": "Role updated successfully",
+      "deleteSuccess": "Role deleted successfully",
+      "error": "Operation failed, please try again later"
+    },
+    "form": {
+      "rolename": {
+        "label": "Role Name",
+        "placeholder": "Enter role name",
+        "required": "Role name is required"
+      }
+    }
   }
 } 

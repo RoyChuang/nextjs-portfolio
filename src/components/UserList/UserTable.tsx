@@ -4,6 +4,7 @@ import { format } from 'date-fns';
 import { Pencil, Trash2 } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
 
+import { Pagination } from '@/components/Pagination';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
@@ -16,7 +17,6 @@ import {
   TableHeader,
   TableRow,
 } from '@/components/ui/table';
-import { Pagination } from '@/components/UserList/Pagination';
 import { useRoles } from '@/hooks/useRoles';
 import { pb } from '@/lib/pocketbase';
 import { User } from '@/types/user';

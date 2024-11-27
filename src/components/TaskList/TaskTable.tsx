@@ -4,7 +4,7 @@ import { format } from 'date-fns';
 import { Pencil, Trash2 } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
 
-import { Pagination } from '@/components/TaskList/Pagination';
+import { Pagination } from '@/components/Pagination';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Progress } from '@/components/ui/progress';

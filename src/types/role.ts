@@ -1,6 +1,10 @@
 export interface Role {
   id: string;
-  rolename: string; // roles collection 中的字段
+  rolename: string;
   created: string;
   updated: string;
+}
+
+export interface RoleFormValues {
+  rolename: string;
 }

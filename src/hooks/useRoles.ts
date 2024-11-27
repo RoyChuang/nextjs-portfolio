@@ -1,27 +1,79 @@
-import { useQuery } from '@tanstack/react-query';
+import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 
-import { getRoles } from '@/api/roles';
-import { Role } from '@/types/role';
+import {
+  createRole,
+  deleteRole,
+  getRoles,
+  GetRolesParams,
+  RolesResponse,
+  updateRole,
+} from '@/api/roles';
+import { pb } from '@/lib/pocketbase';
+import { Role, RoleFormValues } from '@/types/role';
 
-export function useRoles() {
-  const { data: roles = [], isLoading } = useQuery<Role[]>({
-    queryKey: ['roles'],
-    queryFn: getRoles,
-    staleTime: 1000 * 60 * 5, // 5分鐘內不重新獲取
-    cacheTime: 1000 * 60 * 30, // 30分鐘後清除緩存
+// 用於列表頁面的 hook
+export function useRolesList(params: GetRolesParams) {
+  const queryClient = useQueryClient();
+
+  const { data, isLoading } = useQuery<RolesResponse>({
+    queryKey: ['roles-list', params],
+    queryFn: () => getRoles(params),
   });
 
-  // 轉換為以 id 為 key 的對象
-  const rolesMap = roles.reduce(
-    (acc, role) => {
-      acc[role.id] = role;
-      return acc;
+  const { mutateAsync: createRoleMutation } = useMutation({
+    mutationFn: (data: RoleFormValues) => createRole(data),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['roles-list'] });
     },
-    {} as Record<string, Role>
-  );
+  });
+
+  const { mutateAsync: updateRoleMutation } = useMutation({
+    mutationFn: (params: { id: string; data: Partial<RoleFormValues> }) => {
+      return updateRole(params.id, params.data);
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['roles-list'] });
+    },
+  });
+
+  const { mutateAsync: deleteRoleMutation } = useMutation({
+    mutationFn: deleteRole,
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['roles-list'] });
+    },
+  });
 
   return {
-    roles: rolesMap,
+    roles: data?.items || [],
+    total: data?.total || 0,
+    totalPages: data?.totalPages || 0,
+    isLoading,
+    createRole: createRoleMutation,
+    updateRole: async (id: string, data: Partial<RoleFormValues>) => {
+      return await updateRoleMutation({ id, data });
+    },
+    deleteRole: deleteRoleMutation,
+  };
+}
+
+// 用於獲取所有角色的 hook (用於下拉選單等)
+export function useRoles() {
+  const { data, isLoading } = useQuery({
+    queryKey: ['roles-all'],
+    queryFn: async () => {
+      const response = await pb.collection('roles').getFullList();
+      return response.reduce(
+        (acc, role) => {
+          acc[role.id] = role;
+          return acc;
+        },
+        {} as Record<string, Role>
+      );
+    },
+  });
+
+  return {
+    roles: data || {},
     isLoading,
   };
 }
