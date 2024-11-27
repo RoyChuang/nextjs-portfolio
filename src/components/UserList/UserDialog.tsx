@@ -30,34 +30,81 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@/components/ui/select';
+import { Role } from '@/types/role';
 import { User, UserFormValues } from '@/types/user';
 
 // 表單驗證 schema
-const formSchema = z.object({
-  name: z.string().min(2, 'Name must be at least 2 characters'),
-  email: z.string().email('Invalid email address'),
-  role: z.enum(['admin', 'user']),
-  password: z.string().min(6, 'Password must be at least 6 characters').optional(),
-});
+const formSchema = z
+  .object({
+    name: z.string().min(2, 'Name must be at least 2 characters'),
+    email: z.string().email('Invalid email address'),
+    roleId: z.string().min(1, 'Role is required'),
+    password: z.string().min(6, 'Password must be at least 6 characters'),
+    passwordConfirm: z.string(),
+  })
+  .refine(
+    (data) => {
+      // 確保密碼匹配
+      return data.password === data.passwordConfirm;
+    },
+    {
+      message: "Passwords don't match",
+      path: ['passwordConfirm'],
+    }
+  );
+
+// 編輯時使用的 schema
+const editFormSchema = z
+  .object({
+    name: z.string().min(2, 'Name must be at least 2 characters'),
+    email: z.string().email('Invalid email address'),
+    roleId: z.string().min(1, 'Role is required'),
+    password: z
+      .string()
+      .min(6, 'Password must be at least 6 characters')
+      .optional()
+      .or(z.literal('')),
+    passwordConfirm: z.string().optional().or(z.literal('')),
+  })
+  .refine(
+    (data) => {
+      if (!data.password || data.password === '') return true;
+      return data.password === data.passwordConfirm;
+    },
+    {
+      message: "Passwords don't match",
+      path: ['passwordConfirm'],
+    }
+  );
+
+type FormValues = z.infer<typeof formSchema>;
 
 interface UserDialogProps {
   open: boolean;
   onOpenChange: (open: boolean) => void;
   onSubmit: (data: UserFormValues) => void;
   defaultValues?: User;
+  roles?: Role[];
 }
 
-export function UserDialog({ open, onOpenChange, onSubmit, defaultValues }: UserDialogProps) {
+export function UserDialog({
+  open,
+  onOpenChange,
+  onSubmit,
+  defaultValues,
+  roles = [],
+}: UserDialogProps) {
   const { t } = useTranslation();
   const isEditing = !!defaultValues;
 
-  const form = useForm<z.infer<typeof formSchema>>({
-    resolver: zodResolver(formSchema),
+  const form = useForm<UserFormValues>({
+    resolver: zodResolver(isEditing ? editFormSchema : formSchema),
     defaultValues: {
       name: '',
       email: '',
-      role: 'user' as const,
+      roleId: '',
       password: '',
+      passwordConfirm: '',
     },
   });
 
@@ -67,28 +114,49 @@ export function UserDialog({ open, onOpenChange, onSubmit, defaultValues }: User
       form.reset({
         name: defaultValues.name,
         email: defaultValues.email,
-        role: defaultValues.role,
+        roleId: defaultValues.role || defaultValues.roleId,
         password: '', // 編輯時密碼為空
+        passwordConfirm: '',
       });
     } else {
       form.reset({
         name: '',
         email: '',
-        role: 'user',
+        roleId: '',
         password: '',
+        passwordConfirm: '',
       });
     }
   }, [defaultValues, form]);
 
-  const handleSubmit = (values: z.infer<typeof formSchema>) => {
-    // 如果是編輯模式且密碼為空，則不包含密碼字段
-    if (isEditing && !values.password) {
-      const { password, ...dataWithoutPassword } = values;
-      onSubmit(dataWithoutPassword);
-    } else {
-      onSubmit(values);
+  const handleSubmit = async (values: UserFormValues) => {
+    try {
+      // 如果是編輯模式且密碼為空，則不包含密碼相關字段
+      if (isEditing && (!values.password || values.password.trim() === '')) {
+        const { password, passwordConfirm, roleId, ...dataWithoutPassword } = values;
+        await onSubmit({
+          ...dataWithoutPassword,
+          role: roleId,
+        });
+      } else {
+        // 新增用戶或更新密碼時
+        const { roleId, ...otherValues } = values;
+        await onSubmit({
+          ...otherValues,
+          role: roleId,
+        });
+      }
+
+      // 只在新增用戶時重置表單
+      if (!isEditing) {
+        form.reset();
+      }
+
+      // 關閉對話框
+      onOpenChange(false);
+    } catch (error) {
+      console.error('Error submitting form:', error);
     }
-    form.reset();
   };
 
   return (
@@ -129,19 +197,26 @@ export function UserDialog({ open, onOpenChange, onSubmit, defaultValues }: User
             />
             <FormField
               control={form.control}
-              name="role"
+              name="roleId"
               render={({ field }) => (
                 <FormItem>
                   <FormLabel>{t('userList.form.role')}</FormLabel>
-                  <Select onValueChange={field.onChange} defaultValue={field.value}>
+                  <Select
+                    onValueChange={field.onChange}
+                    value={field.value}
+                    defaultValue={field.value}
+                  >
                     <FormControl>
                       <SelectTrigger>
                         <SelectValue placeholder={t('userList.form.selectRole')} />
                       </SelectTrigger>
                     </FormControl>
                     <SelectContent>
-                      <SelectItem value="user">{t('userList.form.roles.user')}</SelectItem>
-                      <SelectItem value="admin">{t('userList.form.roles.admin')}</SelectItem>
+                      {roles.map((role) => (
+                        <SelectItem key={role.id} value={role.id}>
+                          {role.rolename}
+                        </SelectItem>
+                      ))}
                     </SelectContent>
                   </Select>
                   <FormMessage />
@@ -161,6 +236,25 @@ export function UserDialog({ open, onOpenChange, onSubmit, defaultValues }: User
                       {...field}
                       type="password"
                       placeholder={isEditing ? t('userList.form.passwordPlaceholder') : undefined}
+                      required={!isEditing} // 新增時必填
+                    />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+            <FormField
+              control={form.control}
+              name="passwordConfirm"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>{t('userList.form.passwordConfirm')}</FormLabel>
+                  <FormControl>
+                    <Input
+                      {...field}
+                      type="password"
+                      placeholder={t('userList.form.passwordConfirmPlaceholder')}
+                      required={!isEditing || !!form.watch('password')} // 新增時必填，或編輯時有填寫密碼
                     />
                   </FormControl>
                   <FormMessage />

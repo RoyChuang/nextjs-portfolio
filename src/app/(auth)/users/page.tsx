@@ -17,6 +17,7 @@ import {
 import { UserDialog } from '@/components/UserList/UserDialog';
 import { UserTable } from '@/components/UserList/UserTable';
 import { useToast } from '@/hooks/use-toast';
+import { useRolesList } from '@/hooks/useRoles';
 import { useUsers } from '@/hooks/useUsers';
 import { User, UserFormValues } from '@/types/user';
 
@@ -45,6 +46,12 @@ export default function UsersPage() {
     pageSize,
     search,
     sort,
+  });
+
+  const { roles } = useRolesList({
+    page: 1,
+    pageSize: 100,
+    sort: 'rolename',
   });
 
   const handleCreateUser = async (data: UserFormValues) => {
@@ -164,6 +171,7 @@ export default function UsersPage() {
         open={createDialogOpen}
         onOpenChange={setCreateDialogOpen}
         onSubmit={handleCreateUser}
+        roles={roles}
       />
 
       <UserTable
@@ -185,6 +193,7 @@ export default function UsersPage() {
         onOpenChange={(open) => setEditUser({ ...editUser, open })}
         onSubmit={handleEditUser}
         defaultValues={editUser.user || undefined}
+        roles={roles}
       />
 
       <ConfirmDialog

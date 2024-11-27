@@ -1,17 +1,18 @@
 export interface User {
   id: string;
-  email: string;
   name: string;
-  avatar?: string;
-  role: 'admin' | 'user';
+  email: string;
+  role?: string;
+  roleId: string;
   created: string;
   updated: string;
 }
 
 export interface UserFormValues {
-  email: string;
   name: string;
-  avatar?: File | null;
-  role: 'admin' | 'user';
-  password?: string; // 創建時需要，更新時可選
+  email: string;
+  roleId: string;
+  role?: string;
+  password?: string;
+  passwordConfirm?: string;
 }

@@ -14,7 +14,14 @@ export function useUsers(params: GetUsersParams) {
   });
 
   const { mutateAsync: createUserMutation } = useMutation({
-    mutationFn: (data: UserFormValues) => createUser(data),
+    mutationFn: (data: UserFormValues) => {
+      const { role, ...rest } = data;
+      return createUser({
+        ...rest,
+        role,
+        passwordConfirm: data.passwordConfirm,
+      });
+    },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['users', params] });
     },

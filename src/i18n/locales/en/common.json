@@ -22,7 +22,8 @@
     "logout": "Logout",
     "loading": "Loading...",
     "save": "Save",
-    "create": "Create"
+    "create": "Create",
+    "unknown": "Unknown"
   },
   "pagination": {
     "showing": "Showing {start} to {end} of {total} entries",
@@ -110,7 +111,10 @@
       "role": "Role",
       "password": "Password",
       "newPassword": "New Password",
+      "passwordConfirm": "Confirm Password",
       "passwordPlaceholder": "Leave blank to keep unchanged",
+      "passwordConfirmPlaceholder": "Confirm your password",
+      "passwordMismatch": "Passwords don't match",
       "selectRole": "Select role",
       "roles": {
         "user": "User",

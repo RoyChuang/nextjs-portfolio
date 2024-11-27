@@ -22,7 +22,8 @@
     "logout": "登出",
     "loading": "載入中...",
     "save": "儲存",
-    "create": "創建"
+    "create": "創建",
+    "unknown": "未知"
   },
   "pagination": {
     "showing": "顯示第 {start} 到第 {end} 筆，共 {total} 筆",
@@ -110,7 +111,10 @@
       "role": "角色",
       "password": "密碼",
       "newPassword": "新密碼",
-      "passwordPlaceholder": "留空保持不變",
+      "passwordConfirm": "確認密碼",
+      "passwordPlaceholder": "若不修改請留空",
+      "passwordConfirmPlaceholder": "請再次輸入密碼",
+      "passwordMismatch": "密碼不一致",
       "selectRole": "選擇角色",
       "roles": {
         "user": "一般用戶",
@@ -143,7 +147,7 @@
       "createSuccess": "角色建立成功",
       "updateSuccess": "角色更新成功",
       "deleteSuccess": "角色刪除成功",
-      "error": "操作失敗，請稍後再試"
+      "error": "操作���敗，請稍後再試"
     },
     "form": {
       "rolename": {

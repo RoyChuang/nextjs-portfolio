@@ -39,10 +39,12 @@ export const createUser = async (data: UserFormValues): Promise<User> => {
 
   // 添加基本字段
   formData.append('email', data.email);
+  formData.append('emailVisibility', 'true');
   formData.append('name', data.name);
   formData.append('role', data.role);
   if (data.password) {
     formData.append('password', data.password);
+    formData.append('passwordConfirm', data.passwordConfirm || data.password);
   }
 
   // 如果有頭像
