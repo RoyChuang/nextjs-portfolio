@@ -1,11 +1,8 @@
 'use client';
 
-import { useQueryClient } from '@tanstack/react-query';
 import ReactECharts from 'echarts-for-react';
-import { useEffect } from 'react';
 
 import { useTaskStatusCounts } from '@/hooks/useTaskStatusCounts';
-import { pb } from '@/lib/pocketbase';
 
 const getStatusConfig = (status: number) => {
   const config = {
@@ -17,35 +14,7 @@ const getStatusConfig = (status: number) => {
 };
 
 export function TaskStatusChart() {
-  const queryClient = useQueryClient();
   const { data: statusCounts = [], isLoading } = useTaskStatusCounts();
-
-  // 添加 realtime 監聽
-  useEffect(() => {
-    let unsubscribe: (() => void) | null = null;
-
-    const subscribe = async () => {
-      try {
-        unsubscribe = await pb.collection('tasks').subscribe('*', async () => {
-          // 當 tasks 有變化時，重新獲取狀態統計
-          await queryClient.refetchQueries({
-            queryKey: ['taskStatusCounts'],
-            exact: true,
-          });
-        });
-      } catch (error) {
-        console.error('訂閱失敗:', error);
-      }
-    };
-
-    subscribe();
-
-    return () => {
-      if (unsubscribe) {
-        unsubscribe();
-      }
-    };
-  }, [queryClient]);
 
   const pieOptions = {
     title: {

@@ -64,3 +64,28 @@ export const getTaskStatusCounts = async () => {
   const data = await response.json();
   return data.items;
 };
+
+export const getProgressStats = async () => {
+  const ranges = ['0_20', '21_40', '41_60', '61_80', '81_100'];
+  const stats = await Promise.all(
+    ranges.map(async (range) => {
+      const response = await fetch(
+        `https://fellow-letter.pockethost.io/api/collections/view_progress_${range}/records`
+      );
+      const data = await response.json();
+      return data.items[0];
+    })
+  );
+  return stats;
+};
+
+export const getTaskDueStats = async () => {
+  const views = ['overdue', 'today', 'week', 'twoweek'];
+  const stats = await Promise.all(
+    views.map(async (view) => {
+      const response = await pb.collection(`view_due_${view}_tasks`).getList(1, 1);
+      return response.items[0];
+    })
+  );
+  return stats;
+};

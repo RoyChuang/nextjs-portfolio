@@ -26,11 +26,13 @@ export function useTasks(params: GetTasksParams) {
         ...params.data,
         assignedTo: params.data.assignedTo === 'unassigned' ? null : params.data.assignedTo,
       };
-      console.log('Update mutation data:', updateData);
       return updateTask(params.id, updateData);
     },
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['tasks'] });
+      queryClient.invalidateQueries({
+        queryKey: ['tasks', params],
+        exact: true,
+      });
     },
     onError: (error) => {
       throw error;
