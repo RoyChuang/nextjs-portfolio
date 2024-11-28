@@ -14,23 +14,43 @@ pnpm dev
 bun dev
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+# Task Management System
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+一個基於 React 和 PocketBase 的任務管理系統。
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+## 功能特點
 
-## Learn More
+- 即時數據更新
+  - 使用 PocketBase Realtime 訂閱功能
+  - 使用 React Query 管理狀態和緩存
+- 任務管理
+  - 創建、編輯、刪除任務
+  - 任務狀態追蹤
+  - 進度管理
+  - 到期日設置
+  - 任務分配
+- 數據視覺化
+  - 任務狀態分佈圖
+  - 進度分佈圖
+  - 到期時間統計圖
+- 角色管理
+  - 角色創建和管理
+  - 權限控制
 
-To learn more about Next.js, take a look at the following resources:
+## 技術棧
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+- Frontend:
+  - Next.js
+  - React Query
+  - Lodash
+  - ECharts
+  - React Hook Form
+  - Zod
+  - Tailwind CSS
+  - shadcn/ui
+- Backend:
+  - PocketBase
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+## 主要功能實現
 
-## Deploy on Vercel
-
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
-
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+### 即時更新
