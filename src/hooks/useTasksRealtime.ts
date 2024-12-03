@@ -49,6 +49,8 @@ export function useTasksRealtime() {
     return () => {
       if (unsubscribe) {
         unsubscribe();
+        pb.collection('tasks').unsubscribe('*'); // 移除所有 '*' 主題的訂閱
+        console.log('🚀 ~ unsubscribe');
       }
       debouncedRefetch.cancel();
     };
