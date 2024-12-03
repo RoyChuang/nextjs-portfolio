@@ -2,8 +2,8 @@
 
 import { zodResolver } from '@hookform/resolvers/zod';
 import { format } from 'date-fns';
-import { Calendar as CalendarIcon } from 'lucide-react';
-import { useEffect } from 'react';
+import { Calendar as CalendarIcon, Loader2 } from 'lucide-react';
+import { useEffect, useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { useTranslation } from 'react-i18next';
 import * as z from 'zod';
@@ -45,7 +45,7 @@ const taskFormSchema = z.object({
   status: z.number().min(0).max(2),
   progress: z.number().min(0).max(100).default(0),
   dueDate: z.date().optional(),
-  assignedTo: z.string().optional(),
+  assignedTo: z.string().nullable().optional(),
 });
 
 type TaskFormValues = z.infer<typeof taskFormSchema>;
@@ -61,6 +61,7 @@ export function TaskDialog({ open, onOpenChange, onSubmit, defaultValues }: Task
   const { t } = useTranslation();
   const { users } = useUsers({ page: 1, pageSize: 100 }); // 獲取所有用戶
   const isEditing = !!defaultValues;
+  const [isSubmitting, setIsSubmitting] = useState(false);
 
   const form = useForm<TaskFormValues>({
     resolver: zodResolver(taskFormSchema),
@@ -92,14 +93,15 @@ export function TaskDialog({ open, onOpenChange, onSubmit, defaultValues }: Task
   }, [form, defaultValues, open]);
 
   const handleSubmit = async (data: TaskFormValues) => {
+    if (isSubmitting) return;
+
     try {
-      // 確保所有字段都被包含在更新數據中
+      setIsSubmitting(true);
       const formData: TaskFormValues = {
         name: data.name,
         status: data.status,
         progress: data.progress,
         dueDate: data.dueDate,
-        // 明確包含 assignedTo 字段
         assignedTo: data.assignedTo === 'unassigned' ? null : data.assignedTo,
       };
 
@@ -108,6 +110,8 @@ export function TaskDialog({ open, onOpenChange, onSubmit, defaultValues }: Task
       onOpenChange(false);
     } catch (error) {
       console.error('Failed to create/update task:', error);
+    } finally {
+      setIsSubmitting(false);
     }
   };
 
@@ -249,10 +253,24 @@ export function TaskDialog({ open, onOpenChange, onSubmit, defaultValues }: Task
             />
 
             <div className="flex justify-end space-x-2">
-              <Button type="button" variant="outline" onClick={() => onOpenChange(false)}>
+              <Button
+                type="button"
+                variant="outline"
+                onClick={() => onOpenChange(false)}
+                disabled={isSubmitting}
+              >
                 取消
               </Button>
-              <Button type="submit">確認</Button>
+              <Button type="submit" disabled={isSubmitting}>
+                {isSubmitting ? (
+                  <>
+                    <Loader2 className="mr-2 size-4 animate-spin" />
+                    處理中...
+                  </>
+                ) : (
+                  '確認'
+                )}
+              </Button>
             </div>
           </form>
         </Form>

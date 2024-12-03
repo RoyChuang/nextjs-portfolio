@@ -59,11 +59,14 @@ export const createUser = async (data: UserFormValues): Promise<User> => {
 export const updateUser = async (id: string, data: Partial<UserFormValues>) => {
   const formData = new FormData();
 
-  // 只添加已定義的字段
   if (data.email) formData.append('email', data.email);
   if (data.name) formData.append('name', data.name);
   if (data.role) formData.append('role', data.role);
-  if (data.password) formData.append('password', data.password);
+  if (data.password) {
+    formData.append('password', data.password);
+    formData.append('passwordConfirm', data.passwordConfirm || '');
+    formData.append('oldPassword', data.oldPassword || '');
+  }
   if (data.avatar) formData.append('avatar', data.avatar);
 
   return await pb.collection('users').update(id, formData);

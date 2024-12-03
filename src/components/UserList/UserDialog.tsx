@@ -1,7 +1,8 @@
 'use client';
 
 import { zodResolver } from '@hookform/resolvers/zod';
-import { useEffect } from 'react';
+import { Loader2 } from 'lucide-react';
+import { useEffect, useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { useTranslation } from 'react-i18next';
 import * as z from 'zod';
@@ -59,6 +60,7 @@ const editFormSchema = z
     name: z.string().min(2, 'Name must be at least 2 characters'),
     email: z.string().email('Invalid email address'),
     roleId: z.string().min(1, 'Role is required'),
+    oldPassword: z.string().optional().or(z.literal('')),
     password: z
       .string()
       .min(6, 'Password must be at least 6 characters')
@@ -75,9 +77,17 @@ const editFormSchema = z
       message: "Passwords don't match",
       path: ['passwordConfirm'],
     }
+  )
+  .refine(
+    (data) => {
+      if (!data.password || data.password === '') return true;
+      return !!data.oldPassword;
+    },
+    {
+      message: 'Old password is required when changing password',
+      path: ['oldPassword'],
+    }
   );
-
-type FormValues = z.infer<typeof formSchema>;
 
 interface UserDialogProps {
   open: boolean;
@@ -96,6 +106,7 @@ export function UserDialog({
 }: UserDialogProps) {
   const { t } = useTranslation();
   const isEditing = !!defaultValues;
+  const [isSubmitting, setIsSubmitting] = useState(false);
 
   const form = useForm<UserFormValues>({
     resolver: zodResolver(isEditing ? editFormSchema : formSchema),
@@ -105,6 +116,7 @@ export function UserDialog({
       roleId: '',
       password: '',
       passwordConfirm: '',
+      oldPassword: '',
     },
   });
 
@@ -114,9 +126,10 @@ export function UserDialog({
       form.reset({
         name: defaultValues.name,
         email: defaultValues.email,
-        roleId: defaultValues.role || defaultValues.roleId,
-        password: '', // 編輯時密碼為空
+        roleId: defaultValues.role || defaultValues.roleId || '',
+        password: '',
         passwordConfirm: '',
+        oldPassword: '',
       });
     } else {
       form.reset({
@@ -125,37 +138,52 @@ export function UserDialog({
         roleId: '',
         password: '',
         passwordConfirm: '',
+        oldPassword: '',
       });
     }
   }, [defaultValues, form]);
 
   const handleSubmit = async (values: UserFormValues) => {
+    if (isSubmitting) return;
+
     try {
-      // 如果是編輯模式且密碼為空，則不包含密碼相關字段
-      if (isEditing && (!values.password || values.password.trim() === '')) {
-        const { password, passwordConfirm, roleId, ...dataWithoutPassword } = values;
-        await onSubmit({
-          ...dataWithoutPassword,
-          role: roleId,
-        });
+      setIsSubmitting(true);
+      if (isEditing) {
+        if (!values.password || values.password === '') {
+          // 沒有修改密碼的情況
+          const { roleId, ...dataWithoutPassword } = values;
+          await onSubmit({
+            ...dataWithoutPassword,
+            role: roleId,
+            roleId,
+          });
+        } else {
+          // 有修改密碼的情況
+          const { roleId, ...otherValues } = values;
+          await onSubmit({
+            ...otherValues,
+            role: roleId,
+            roleId,
+          });
+        }
       } else {
-        // 新增用戶或更新密碼時
+        // 新建用戶的情況
         const { roleId, ...otherValues } = values;
         await onSubmit({
           ...otherValues,
           role: roleId,
+          roleId,
         });
       }
 
-      // 只在新增用戶時重置表單
       if (!isEditing) {
         form.reset();
       }
-
-      // 關閉對話框
       onOpenChange(false);
     } catch (error) {
       console.error('Error submitting form:', error);
+    } finally {
+      setIsSubmitting(false);
     }
   };
 
@@ -203,8 +231,8 @@ export function UserDialog({
                   <FormLabel>{t('userList.form.role')}</FormLabel>
                   <Select
                     onValueChange={field.onChange}
-                    value={field.value}
-                    defaultValue={field.value}
+                    value={field.value || ''}
+                    defaultValue={field.value || ''}
                   >
                     <FormControl>
                       <SelectTrigger>
@@ -261,9 +289,38 @@ export function UserDialog({
                 </FormItem>
               )}
             />
+            {isEditing && form.watch('password') && (
+              <FormField
+                control={form.control}
+                name="oldPassword"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>{t('userList.form.oldPassword')}</FormLabel>
+                    <FormControl>
+                      <Input
+                        {...field}
+                        type="password"
+                        placeholder={t('userList.form.oldPasswordPlaceholder')}
+                        required={!!form.watch('password')}
+                      />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+            )}
             <DialogFooter>
-              <Button type="submit" disabled={form.formState.isSubmitting}>
-                {isEditing ? t('common.save') : t('common.create')}
+              <Button type="submit" disabled={isSubmitting || form.formState.isSubmitting}>
+                {isSubmitting ? (
+                  <>
+                    <Loader2 className="mr-2 size-4 animate-spin" />
+                    {t('common.processing')}
+                  </>
+                ) : isEditing ? (
+                  t('common.save')
+                ) : (
+                  t('common.create')
+                )}
               </Button>
             </DialogFooter>
           </form>

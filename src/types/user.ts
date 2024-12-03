@@ -11,8 +11,9 @@ export interface User {
 export interface UserFormValues {
   name: string;
   email: string;
-  roleId: string;
-  role?: string;
   password?: string;
+  oldPassword?: string;
   passwordConfirm?: string;
+  role?: string;
+  roleId?: string;
 }

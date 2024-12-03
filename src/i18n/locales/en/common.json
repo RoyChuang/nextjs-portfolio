@@ -23,7 +23,8 @@
     "loading": "Loading...",
     "save": "Save",
     "create": "Create",
-    "unknown": ""
+    "unknown": "",
+    "processing": "Processing..."
   },
   "pagination": {
     "showing": "Showing {start} to {end} of {total} entries",
@@ -135,7 +136,10 @@
       "roles": {
         "user": "User",
         "admin": "Administrator"
-      }
+      },
+      "oldPassword": "Old Password",
+      "oldPasswordPlaceholder": "Enter old password",
+      "oldPasswordRequired": "Old password is required when changing password"
     }
   },
   "roleList": {

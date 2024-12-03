@@ -23,7 +23,8 @@
     "loading": "載入中...",
     "save": "儲存",
     "create": "創建",
-    "unknown": ""
+    "unknown": "",
+    "processing": "處理中..."
   },
   "pagination": {
     "showing": "顯示第 {start} 到第 {end} 筆，共 {total} 筆",
@@ -135,7 +136,10 @@
       "roles": {
         "user": "一般用戶",
         "admin": "管理員"
-      }
+      },
+      "oldPassword": "舊密碼",
+      "oldPasswordPlaceholder": "請輸入舊密碼",
+      "oldPasswordRequired": "修改密碼時需要輸入舊密碼"
     }
   },
   "roleList": {
