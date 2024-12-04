@@ -6,6 +6,7 @@ export interface User {
   roleId: string;
   created: string;
   updated: string;
+  avatar?: string;
 }
 
 export interface UserFormValues {
@@ -16,4 +17,5 @@ export interface UserFormValues {
   passwordConfirm?: string;
   role?: string;
   roleId?: string;
+  avatar?: string;
 }

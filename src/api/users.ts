@@ -1,3 +1,5 @@
+import { RecordModel } from 'pocketbase';
+
 import { pb } from '@/lib/pocketbase';
 import { User, UserFormValues } from '@/types/user';
 
@@ -9,7 +11,7 @@ export interface GetUsersParams {
 }
 
 export interface UsersResponse {
-  items: User[];
+  items: RecordModel[];
   total: number;
   totalPages: number;
 }
@@ -41,7 +43,7 @@ export const createUser = async (data: UserFormValues): Promise<User> => {
   formData.append('email', data.email);
   formData.append('emailVisibility', 'true');
   formData.append('name', data.name);
-  formData.append('role', data.role);
+  formData.append('role', data.role ?? '');
   if (data.password) {
     formData.append('password', data.password);
     formData.append('passwordConfirm', data.passwordConfirm || data.password);
@@ -52,7 +54,7 @@ export const createUser = async (data: UserFormValues): Promise<User> => {
     formData.append('avatar', data.avatar);
   }
 
-  const response = await pb.collection('users').create(formData);
+  const response = (await pb.collection('users').create(formData)) as User;
   return response;
 };
 

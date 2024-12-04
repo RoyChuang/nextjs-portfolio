@@ -66,7 +66,7 @@ export function UserTable({
   );
 
   const renderUserRow = (user: User) => {
-    const userRole = roles[user.role];
+    const userRole = roles[user.role ?? ''];
 
     return (
       <TableRow key={user.id}>
